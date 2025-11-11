@@ -1,0 +1,112 @@
+# =====================================
+# Django / Python / PostgreSQL Project
+# =====================================
+
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Django specific
+*.log
+*.pot
+*.pyc
+db.sqlite3
+local_settings.py
+media/
+staticfiles/
+static_root/
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Migrations (optional - if you don’t want to version them)
+# */migrations/__pycache__/
+# */migrations/*.py
+
+# Coverage / Test / Reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+test-results/
+__pycache__/
+
+# VSCode history
+.history/
+*.code-workspace
+
+# MyPy / Pyre / Pytype / Pylint
+.mypy_cache/
+.pyre/
+.pytype/
+pylint-report.txt
+pylint-output.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Backup files
+*.bak
+*.swp
+*.tmp
+*~
+
+# Docker
+docker-compose.override.yml
+.docker/
+*.pid
+
+# Gunicorn / Celery / Uvicorn logs
+*.pid
+celerybeat-schedule
+celerybeat.pid
+gunicorn-access.log
+gunicorn-error.log
+uvicorn.log
+
+# Media uploads
+/media/
+uploads/
+user_uploads/
+
+# Static build outputs (if you collectstatic)
+static/
+build/
+dist/
+
+# Migration files (optional)
+*/migrations/*.pyc
+*/migrations/__pycache__/
+*/migrations/*.py~
+*/migrations/*.bak
+*/migrations/*.swp
+*/migrations/*.tmp
+*/migrations/*~ 
+migrations/
