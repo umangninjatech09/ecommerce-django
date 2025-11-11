@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="col-md-8 offset-md-2">
+  <h3 class="mb-4">Profile Details</h3>
+  <div class="card">
+    <div class="card-body">
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+    </div>
+  </div>
+
+  <a href="{% url 'address_list_page' %}" class="btn btn-primary mt-4">Manage Addresses</a>
+</div>
+{% endblock %}

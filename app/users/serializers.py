@@ -4,7 +4,7 @@ from .models import User, Address
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = "__all__"
+        fields = ("id", "receiver_name", "phone", "address_line", "city", "state", "country", "postal_code", "is_default", "user", "created_at", "updated_at", "is_deleted")
         read_only_fields = ("user",)
 
 class UserSerializer(serializers.ModelSerializer):

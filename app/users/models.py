@@ -21,7 +21,7 @@ class User(AbstractUser, BaseModel):
 
 class Address(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
-    full_name = models.CharField(max_length=100)
+    receiver_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     address_line = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
