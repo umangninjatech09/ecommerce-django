@@ -1,0 +1,13 @@
+from django.urls import path
+from . import web_views
+
+urlpatterns = [
+    path("register/", web_views.register_page, name="register_page"),
+    path("login/", web_views.login_page, name="login_page"),
+    path("logout/", web_views.logout_page, name="logout_page"),
+    path("profile/", web_views.profile_page, name="profile_page"),
+    path("addresses/", web_views.address_list_page, name="address_list_page"),
+    path("addresses/add/", web_views.address_create_page, name="address_create_page"),
+    path("addresses/<int:pk>/edit/", web_views.address_edit_page, name="address_edit_page"),
+    path("addresses/<int:pk>/delete/", web_views.address_delete_page, name="address_delete_page"),
+]
