@@ -8,6 +8,6 @@ urlpatterns = [
     path("profile/", web_views.profile_page, name="profile_page"),
     path("addresses/", web_views.address_list_page, name="address_list_page"),
     path("addresses/add/", web_views.address_create_page, name="address_create_page"),
-    path("addresses/<uuid:pk>/edit/", web_views.address_edit_page, name="address_edit_page"),
-    path("addresses/<uuid:pk>/delete/", web_views.address_delete_page, name="address_delete_page"),
+    path("addresses/<int:pk>/edit/", web_views.address_edit_page, name="address_edit_page"),
+    path("addresses/<int:pk>/delete/", web_views.address_delete_page, name="address_delete_page"),
 ]

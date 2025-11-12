@@ -113,3 +113,10 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+
+AUTHENTICATION_BACKENDS = [
+    "app.users.backends.EmailOrUsernameBackend",   # ✅ Correct Python import path
+    "django.contrib.auth.backends.ModelBackend",
+]
+
