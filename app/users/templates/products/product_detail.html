@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} | E-Shop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-5">
+      <img src="{{ product.thumbnail.url }}" class="img-fluid rounded shadow" alt="{{ product.name }}">
+    </div>
+    <div class="col-md-7">
+      <h3>{{ product.name }}</h3>
+      <p class="text-muted">{{ product.category.name }}</p>
+      {% if product.discount_price %}
+        <p class="text-muted text-decoration-line-through">₹{{ product.price }}</p>
+        <h4 class="text-danger">₹{{ product.discount_price }}</h4>
+      {% else %}
+        <h4 class="text-primary">₹{{ product.price }}</h4>
+      {% endif %}
+      <p>{{ product.description }}</p>
+
+      <button class="btn btn-warning btn-lg mt-2">Add to Cart</button>
+    </div>
+  </div>
+
+  {% if product.images.all %}
+    <hr>
+    <h5 class="mt-4 mb-3">More Images</h5>
+    <div class="row g-3">
+      {% for image in product.images.all %}
+        <div class="col-md-3 col-sm-4 col-6">
+          <img src="{{ image.image.url }}" class="img-fluid rounded border">
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
