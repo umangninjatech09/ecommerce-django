@@ -25,6 +25,10 @@ class Product(BaseModel):
     def __str__(self):
         return self.name
     
+    @property
+    def final_price(self):
+        return self.discount_price if self.discount_price else self.price
+    
 
 class ProductImage(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')

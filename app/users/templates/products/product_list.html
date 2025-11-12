@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Products | E-Shop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Our Products</h2>
+
+  <div class="row g-4">
+    {% for product in products %}
+      <div class="col-md-3 col-sm-6">
+        <div class="card shadow-sm product-card">
+          <img src="{{ product.thumbnail.url }}" class="card-img-top" alt="{{ product.name }}">
+          <div class="card-body text-center">
+            <h6 class="fw-bold">{{ product.name }}</h6>
+            {% if product.discount_price %}
+              <p class="text-muted text-decoration-line-through">₹{{ product.price }}</p>
+              <p class="price text-danger fw-bold">₹{{ product.discount_price }}</p>
+            {% else %}
+              <p class="price text-primary fw-bold">₹{{ product.price }}</p>
+            {% endif %}
+            <a href="{% url 'product_detail_page' product.slug %}" class="btn btn-sm btn-outline-primary">View</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No products available.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

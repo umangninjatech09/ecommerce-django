@@ -24,4 +24,8 @@ urlpatterns = [
     path("users/", include("app.users.urls")),
     path("", user_views.home_page, name="home_page"),
     path("user/", include("app.users.web_urls")),
+    path("products/", include("app.products.urls")),
+    path("admin-panel/", include("app.products.admin_urls")),
+
+
 ]
