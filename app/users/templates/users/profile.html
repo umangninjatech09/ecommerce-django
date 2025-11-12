@@ -1,17 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Profile{% endblock %}
+{% block title %}My Profile | E-Shop{% endblock %}
 
 {% block content %}
-<div class="col-md-8 offset-md-2">
-  <h3 class="mb-4">Profile Details</h3>
-  <div class="card">
-    <div class="card-body">
-      <p><strong>Username:</strong> {{ user.username }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Phone:</strong> {{ user.phone_number }}</p>
-    </div>
-  </div>
+<style>
+  .profile-header {
+    background-color: #2874f0;
+    color: white;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+  }
+  .profile-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    max-width: 700px;
+    margin: 30px auto;
+  }
+  .profile-body {
+    padding: 20px;
+  }
+  .profile-body p {
+    font-size: 16px;
+  }
+  .btn-edit {
+    background-color: #fb641b;
+    color: white;
+  }
+  .btn-edit:hover {
+    background-color: #e55b10;
+  }
+</style>
 
-  <a href="{% url 'address_list_page' %}" class="btn btn-primary mt-4">Manage Addresses</a>
+<div class="profile-card">
+  <div class="profile-header text-center">
+    <h3>My Profile</h3>
+  </div>
+  <div class="profile-body">
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Joined On:</strong> {{ user.date_joined|date:"d M, Y" }}</p>
+    <hr>
+    <a href="{% url 'address_list_page' %}" class="btn btn-primary me-2">Manage Addresses</a>
+    <a href="{% url 'logout_page' %}" class="btn btn-outline-danger">Logout</a>
+  </div>
 </div>
 {% endblock %}

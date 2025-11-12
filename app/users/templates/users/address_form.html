@@ -1,13 +1,82 @@
 {% extends "base.html" %}
-{% block title %}Address Form{% endblock %}
+{% block title %}{{ form_title }} | E-Shop{% endblock %}
 
 {% block content %}
-<div class="col-md-6 offset-md-3">
-  <h3 class="mb-4">{{ title }}</h3>
-  <form method="POST">
+<style>
+  .address-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 25px;
+  }
+  .btn-save {
+    background-color: #fb641b;
+    color: white;
+  }
+  .btn-save:hover {
+    background-color: #e55b10;
+  }
+</style>
+
+<div class="address-container">
+  <h3 class="mb-4 text-center">{{ form_title }}</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Save</button>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Receiver Name</label>
+        <input type="text" name="receiver_name" value="{{ address.receiver_name|default:'' }}" class="form-control" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" value="{{ address.phone|default:'' }}" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Address Line</label>
+      <textarea name="address_line" class="form-control" rows="2" required>{{ address.address_line|default:'' }}</textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">City</label>
+        <input type="text" name="city" value="{{ address.city|default:'' }}" class="form-control" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">State</label>
+        <input type="text" name="state" value="{{ address.state|default:'' }}" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Country</label>
+        <input type="text" name="country" value="{{ address.country|default:'' }}" class="form-control" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Postal Code</label>
+        <input type="text" name="postal_code" value="{{ address.postal_code|default:'' }}" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="is_default" {% if address.is_default %}checked{% endif %}>
+      <label class="form-check-label">Set as default address</label>
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-save">{{ title }}</button>
+    </div>
   </form>
 </div>
 {% endblock %}

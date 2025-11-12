@@ -1,13 +1,83 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Register | E-Shop{% endblock %}
 
 {% block content %}
-<div class="col-md-6 offset-md-3">
-  <h3 class="mb-4">User Registration</h3>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Register</button>
-  </form>
+<style>
+  .auth-container {
+    max-width: 500px;
+    margin: 50px auto;
+  }
+  .auth-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  .auth-header {
+    background-color: #2874f0;
+    color: white;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  .auth-header h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  .auth-body {
+    padding: 25px;
+  }
+  .btn-register {
+    background-color: #fb641b;
+    color: white;
+    font-weight: 600;
+  }
+  .btn-register:hover {
+    background-color: #e55b10;
+  }
+  a.text-blue {
+    color: #2874f0;
+  }
+</style>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header text-center">
+      <h3>Create a New Account</h3>
+    </div>
+    <div class="auth-body">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" placeholder="Choose a username" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Phone number</label>
+          <input type="phone_number" name="phone_number" class="form-control" placeholder="Enter phone number" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-register">Register</button>
+        </div>
+      </form>
+
+      <p class="text-center mt-3">
+        Already have an account? <a href="{% url 'login_page' %}" class="text-blue fw-bold">Login here</a>
+      </p>
+    </div>
+  </div>
 </div>
 {% endblock %}
