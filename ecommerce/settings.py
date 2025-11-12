@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "app.core",
     "app.users",
+    "app.products",
 
 ]
 
