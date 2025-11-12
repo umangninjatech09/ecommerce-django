@@ -6,6 +6,12 @@ from .forms import RegisterForm, LoginForm, AddressForm
 from .models import Address
 
 
+
+@login_required
+def home_page(request):
+    return render(request, "home.html")
+
+
 # ---------------------------
 # Register
 # ---------------------------
@@ -35,7 +41,8 @@ def login_page(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("profile_page")
+                messages.success(request, f"Welcome back, {user.username} 👋")
+                return redirect("home_page")
             else:
                 messages.error(request, "Invalid username or password.")
     else:
