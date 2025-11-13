@@ -17,6 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from app.users import web_views as user_views
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 
 
 urlpatterns = [
@@ -25,7 +29,11 @@ urlpatterns = [
     path("", user_views.home_page, name="home_page"),
     path("user/", include("app.users.web_urls")),
     path("products/", include("app.products.urls")),
-    path("admin-panel/", include("app.products.admin_urls")),
+    path("retailer/", include("app.products.admin_urls")),
+    # path("", include("app.products.web_urls")),  # 👈 add this for homepage
 
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

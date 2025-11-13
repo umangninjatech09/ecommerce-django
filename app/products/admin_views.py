@@ -5,19 +5,22 @@ from .models import Product, Category, ProductImage
 from .forms import ProductForm, CategoryForm, ProductImageForm
 
 
-def admin_required(view_func):
-    """Allow only users with is_admin=True"""
-    return login_required(user_passes_test(lambda u: getattr(u, "is_admin", False))(view_func))
+# def admin_required(view_func):
+#     """Allow only users with is_admin=True"""
+#     return login_required(user_passes_test(lambda u: getattr(u, "is_admin", False))(view_func))
+
+def retailer_required(view_func):
+    return login_required(user_passes_test(lambda u: u.is_retailer or u.is_admin)(view_func))
 
 
 # ---------------- CATEGORY ----------------
-@admin_required
+@retailer_required
 def category_list_page(request):
     categories = Category.objects.filter(is_deleted=False)
     return render(request, "products/category_list.html", {"categories": categories})
 
 
-@admin_required
+@retailer_required
 def category_create_page(request):
     if request.method == "POST":
         form = CategoryForm(request.POST)
@@ -30,7 +33,7 @@ def category_create_page(request):
     return render(request, "products/category_form.html", {"form": form, "title": "Add Category"})
 
 
-@admin_required
+@retailer_required
 def category_edit_page(request, pk):
     category = get_object_or_404(Category, id=pk, is_deleted=False)
     if request.method == "POST":
@@ -44,7 +47,7 @@ def category_edit_page(request, pk):
     return render(request, "products/category_form.html", {"form": form, "title": "Edit Category"})
 
 
-@admin_required
+@retailer_required
 def category_delete_page(request, pk):
     category = get_object_or_404(Category, id=pk, is_deleted=False)
     category.is_deleted = True
@@ -54,13 +57,13 @@ def category_delete_page(request, pk):
 
 
 # ---------------- PRODUCT ----------------
-@admin_required
+@retailer_required
 def product_admin_list_page(request):
     products = Product.objects.filter(is_deleted=False)
     return render(request, "products/product_admin_list.html", {"products": products})
 
 
-@admin_required
+@retailer_required
 def product_create_page(request):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
@@ -73,7 +76,7 @@ def product_create_page(request):
     return render(request, "products/product_form.html", {"form": form, "title": "Add Product"})
 
 
-@admin_required
+@retailer_required
 def product_edit_page(request, pk):
     product = get_object_or_404(Product, id=pk, is_deleted=False)
     if request.method == "POST":
@@ -87,7 +90,7 @@ def product_edit_page(request, pk):
     return render(request, "products/product_form.html", {"form": form, "title": "Edit Product"})
 
 
-@admin_required
+@retailer_required
 def product_delete_page(request, pk):
     product = get_object_or_404(Product, id=pk, is_deleted=False)
     product.is_deleted = True
