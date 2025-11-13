@@ -41,45 +41,31 @@
     <p>Your favorite destination for online shopping.</p>
   </div>
 
-  <h3 class="mt-5 mb-3">Featured Products</h3>
-  <div class="row g-4">
-    <!-- Demo products -->
-    <div class="col-md-3 col-sm-6">
-      <div class="product-card">
-        <img src="https://via.placeholder.com/300x200" alt="Product">
-        <div class="card-body text-center">
-          <h5>Smartphone X</h5>
-          <p class="price">₹49,999</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="product-card">
-        <img src="https://via.placeholder.com/300x200" alt="Product">
-        <div class="card-body text-center">
-          <h5>Wireless Earbuds</h5>
-          <p class="price">₹2,499</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="product-card">
-        <img src="https://via.placeholder.com/300x200" alt="Product">
-        <div class="card-body text-center">
-          <h5>Smartwatch Z</h5>
-          <p class="price">₹5,999</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="product-card">
-        <img src="https://via.placeholder.com/300x200" alt="Product">
-        <div class="card-body text-center">
-          <h5>Laptop Pro</h5>
-          <p class="price">₹89,999</p>
-        </div>
-      </div>
-    </div>
+  {% for item in category_data %}
+  <div class="mt-5 mb-3">
+    <h3 class="fw-bold">{{ item.category.name }}</h3>
   </div>
+
+  <div class="row g-4">
+    {% for product in item.products %}
+    <div class="col-md-3 col-sm-6">
+      <div class="product-card">
+        <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
+        <div class="card-body text-center">
+          <h5>{{ product.name }}</h5>
+
+          {% if product.discount_price %}
+            <p class="price">₹{{ product.discount_price }}</p>
+            <small class="text-muted text-decoration-line-through">₹{{ product.price }}</small>
+          {% else %}
+            <p class="price">₹{{ product.price }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% endfor %}
 </div>
 {% endblock %}
