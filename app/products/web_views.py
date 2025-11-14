@@ -29,3 +29,5 @@ def home_page(request):
         })
 
     return render(request, "products/home.html", {"category_data": category_data})
+
+

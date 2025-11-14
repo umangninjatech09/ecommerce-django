@@ -54,6 +54,7 @@
       text-align: center;
       padding: 15px 0;
       font-size: 0.9rem;
+      margin-top: 40px;
     }
 
     footer a {
@@ -81,28 +82,55 @@
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
+
+          <!-- Home -->
           <li class="nav-item">
             <a class="nav-link" href="{% url 'home_page' %}">Home</a>
           </li>
 
+          <!-- Cart Visible for Everyone -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'cart_page' %}">🛒 Cart</a>
+          </li>
+
           {% if user.is_authenticated %}
+
+            <!-- Profile -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'profile_page' %}">Profile</a>
             </li>
+
+            <!-- Address List -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'address_list_page' %}">Addresses</a>
             </li>
+
+            <!-- Retailer Panel -->
+            {% if user.is_retailer %}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin-panel/">Retailer Panel</a>
+            </li>
+            {% endif %}
+
+            <!-- Logout -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'logout_page' %}">Logout</a>
             </li>
+
           {% else %}
+
+            <!-- Login -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'login_page' %}">Login</a>
             </li>
+
+            <!-- Register -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'register_page' %}">Register</a>
             </li>
+
           {% endif %}
+
         </ul>
       </div>
     </div>
@@ -114,20 +142,20 @@
       {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
           {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       {% endfor %}
     {% endif %}
   </div>
 
-  <!-- Page Content -->
+  <!-- Main Page Content -->
   <main class="container">
     {% block content %}{% endblock %}
   </main>
 
   <!-- Footer -->
   <footer>
-    <p>© 2025 E-Shop. Built with using Django.</p>
+    <p>© 2025 E-Shop. Built using Django.</p>
   </footer>
 
   <!-- Bootstrap JS -->

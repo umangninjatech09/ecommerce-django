@@ -2,6 +2,7 @@
 {% block title %}Home | E-Shop{% endblock %}
 
 {% block content %}
+
 <style>
   .hero-banner {
     background-color: #2874f0;
@@ -36,36 +37,60 @@
 </style>
 
 <div class="container mt-4">
+
+  <!-- Hero Banner -->
   <div class="hero-banner">
     <h2>Welcome to E-Shop</h2>
     <p>Your favorite destination for online shopping.</p>
   </div>
 
+  <!-- Category wise product listing -->
   {% for item in category_data %}
-  <div class="mt-5 mb-3">
-    <h3 class="fw-bold">{{ item.category.name }}</h3>
-  </div>
 
-  <div class="row g-4">
-    {% for product in item.products %}
-    <div class="col-md-3 col-sm-6">
-      <div class="product-card">
-        <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
-        <div class="card-body text-center">
-          <h5>{{ product.name }}</h5>
+    {% if item.products %}
+    <div class="mt-5 mb-3">
+      <h3 class="fw-bold">{{ item.category.name }}</h3>
+    </div>
 
-          {% if product.discount_price %}
-            <p class="price">₹{{ product.discount_price }}</p>
-            <small class="text-muted text-decoration-line-through">₹{{ product.price }}</small>
+    <div class="row g-4">
+
+      {% for product in item.products %}
+      <div class="col-md-3 col-sm-6">
+        <div class="product-card">
+
+          <!-- Thumbnail -->
+          {% if product.thumbnail %}
+            <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
           {% else %}
-            <p class="price">₹{{ product.price }}</p>
+            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No image">
           {% endif %}
+
+          <div class="card-body text-center">
+            <h5>{{ product.name }}</h5>
+
+            {% if product.discount_price %}
+              <p class="price">₹{{ product.discount_price }}</p>
+              <small class="text-muted text-decoration-line-through">
+                ₹{{ product.price }}
+              </small>
+            {% else %}
+              <p class="price">₹{{ product.price }}</p>
+            {% endif %}
+
+            <!-- Add to Cart Button -->
+            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-sm mt-2">
+              Add to Cart
+            </a>
+
+          </div>
         </div>
       </div>
+      {% endfor %}
+
     </div>
-    {% endfor %}
-  </div>
+    {% endif %}
 
   {% endfor %}
+
 </div>
 {% endblock %}
