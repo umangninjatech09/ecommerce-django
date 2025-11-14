@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Checkout</h2>
+
+<div class="row">
+
+    <!-- LEFT SECTION - Address Selection -->
+    <div class="col-md-7">
+
+        <h4>Select Delivery Address</h4>
+
+        {% if addresses %}
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Address List -->
+                {% for address in addresses %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <label class="d-block">
+                            <input type="radio" name="address_id" value="{{ address.id }}" required>
+                            <strong>{{ address.receiver_name }}</strong><br>
+                            {{ address.address_line }}, {{ address.city }}, {{ address.state }}<br>
+                            {{ address.country }} - {{ address.postal_code }}<br>
+                            Phone: {{ address.phone }}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <button class="btn btn-success btn-lg mt-3">Place Order</button>
+            </form>
+
+        {% else %}
+            <p>No address found. Add one in your profile.</p>
+        {% endif %}
+    </div>
+
+    <!-- RIGHT SECTION - Order Summary -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body">
+
+                <h4>Order Summary</h4>
+                <hr>
+
+                {% for item in items %}
+                    <p>
+                        {{ item.product.name }}  
+                        (x{{ item.quantity }})  
+                        <span class="float-end">₹{{ item.total_price }}</span>
+                    </p>
+                {% endfor %}
+
+                <hr>
+                <h4>Total: ₹{{ total }}</h4>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
