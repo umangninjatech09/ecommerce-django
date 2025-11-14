@@ -23,26 +23,85 @@
   .profile-body p {
     font-size: 16px;
   }
-  .btn-edit {
-    background-color: #fb641b;
-    color: white;
+  .orders-section {
+    max-width: 900px;
+    margin: 40px auto;
   }
-  .btn-edit:hover {
-    background-color: #e55b10;
+  .order-table th {
+    background-color: #2874f0;
+    color: white;
   }
 </style>
 
+<!-- USER PROFILE CARD -->
 <div class="profile-card">
   <div class="profile-header text-center">
     <h3>My Profile</h3>
   </div>
+
   <div class="profile-body">
     <p><strong>Username:</strong> {{ user.username }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Joined On:</strong> {{ user.date_joined|date:"d M, Y" }}</p>
+
     <hr>
-    <a href="{% url 'address_list_page' %}" class="btn btn-primary me-2">Manage Addresses</a>
-    <a href="{% url 'logout_page' %}" class="btn btn-outline-danger">Logout</a>
+
+    <a href="{% url 'address_list_page' %}" class="btn btn-primary">
+        Manage Addresses
+    </a>
+
+    <a href="{% url 'logout_page' %}" class="btn btn-outline-danger">
+        Logout
+    </a>
+
+    {% if user.is_retailer %}
+    <a href="/admin-panel/" class="btn btn-outline-warning">
+        Retailer Panel
+    </a>
+    {% endif %}
   </div>
 </div>
+
+<!-- ORDER HISTORY SECTION -->
+<div class="orders-section">
+  <h3 class="mb-3">My Orders</h3>
+
+  {% if orders %}
+  <table class="table table-bordered order-table">
+    <thead>
+      <tr>
+        <th>Order No</th>
+        <th>Status</th>
+        <th>Payment</th>
+        <th>Total</th>
+        <th>Date</th>
+        <th>View</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for order in orders %}
+      <tr>
+        <td>{{ order.order_no }}</td>
+        <td>{{ order.order_status|title }}</td>
+        <td>{{ order.payment_status|title }}</td>
+        <td>₹{{ order.total_amount }}</td>
+        <td>{{ order.created_at|date:"d M Y" }}</td>
+        <td>
+          <a href="{% url 'order_detail_page' order.id %}"
+             class="btn btn-sm btn-primary">
+             Details
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+
+  </table>
+
+  {% else %}
+  <p class="text-muted">You have not placed any orders yet.</p>
+  {% endif %}
+</div>
+
 {% endblock %}

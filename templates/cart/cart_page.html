@@ -20,7 +20,7 @@
         <tbody>
             {% for item in items %}
             <tr>
-        
+
                 <!-- Product Image + Name -->
                 <td>
                     <div class="d-flex align-items-center">
@@ -35,10 +35,10 @@
                         <span>{{ item.product.name }}</span>
                     </div>
                 </td>
-            
+
                 <!-- Price -->
                 <td>₹{{ item.price }}</td>
-        
+
                 <!-- Quantity Update -->
                 <td>
                     <form action="{% url 'update_cart' item.id %}" method="POST">
@@ -47,24 +47,31 @@
                                min="1" class="form-control" onchange="this.form.submit()">
                     </form>
                 </td>
-                
+
                 <!-- Subtotal -->
                 <td>₹{{ item.total_price }}</td>
-        
+
                 <!-- Remove Button -->
                 <td>
                     <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">
                         Remove
                     </a>
                 </td>
-        
+
             </tr>
             {% endfor %}
         </tbody>
-        
+
     </table>
 
     <h3 class="text-end">Total: ₹{{ total }}</h3>
+
+    <!-- ⭐ BUY NOW BUTTON (IMPORTANT) -->
+    <div class="text-end mt-3">
+        <a href="{% url 'checkout_page' %}" class="btn btn-success btn-lg">
+            Buy Now
+        </a>
+    </div>
 
     {% else %}
     <p>Your cart is empty.</p>

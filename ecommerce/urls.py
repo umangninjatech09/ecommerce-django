@@ -32,6 +32,7 @@ urlpatterns = [
     path("retailer/", include("app.products.admin_urls")),
     # path("", include("app.products.web_urls")),  # 👈 add this for homepage
     path("cart/", include("app.carts.urls")),
+    path("order/", include("app.orders.urls")),
 
 
 

@@ -99,7 +99,11 @@ def logout_page(request):
 # ---------------------------
 @login_required
 def profile_page(request):
-    return render(request, "users/profile.html", {"user": request.user})
+    orders = request.user.orders.order_by("-created_at")
+    return render(request, "users/profile.html", {
+        "user": request.user,
+        "orders": orders
+    })
 
 
 # ---------------------------

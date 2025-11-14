@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Order Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Order #{{ order.order_no }}</h2>
+
+    <p><strong>Status:</strong> {{ order.order_status }}</p>
+    <p><strong>Payment:</strong> {{ order.payment_status }}</p>
+    <p><strong>Shipping Address:</strong><br>{{ order.address }}</p>
+
+    <hr>
+
+    <h4>Items</h4>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>
+                    <img src="{{ item.product.thumbnail.url }}" width="60" class="me-2 rounded">
+                    {{ item.product.name }}
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>₹{{ item.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="text-end">Total: ₹{{ order.total_amount }}</h3>
+
+</div>
+{% endblock %}

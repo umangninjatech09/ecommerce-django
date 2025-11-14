@@ -90,7 +90,7 @@
 
           <!-- Cart Visible for Everyone -->
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'cart_page' %}">🛒 Cart</a>
+            <a class="nav-link" href="{% url 'cart_page' %}">Cart 🛒</a>
           </li>
 
           {% if user.is_authenticated %}
@@ -100,17 +100,17 @@
               <a class="nav-link" href="{% url 'profile_page' %}">Profile</a>
             </li>
 
-            <!-- Address List -->
+            <!-- Address List
             <li class="nav-item">
               <a class="nav-link" href="{% url 'address_list_page' %}">Addresses</a>
-            </li>
+            </li> -->
 
             <!-- Retailer Panel -->
-            {% if user.is_retailer %}
+            <!-- {% if user.is_retailer %}
             <li class="nav-item">
               <a class="nav-link" href="/admin-panel/">Retailer Panel</a>
             </li>
-            {% endif %}
+            {% endif %} -->
 
             <!-- Logout -->
             <li class="nav-item">
