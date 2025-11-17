@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegisterForm, LoginForm, AddressForm, RetailerRegisterForm
@@ -7,7 +7,16 @@ from .models import Address
 from app.products.models import Product, Category
 from django.db.models import Sum
 from django.apps import apps
+from django.contrib.auth.tokens import default_token_generator, PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
 
+
+User = apps.get_model("users", "User")
+
+token_generator = PasswordResetTokenGenerator()
 
 
 def home_page(request):
@@ -56,6 +65,57 @@ def retailer_register_page(request):
         form = RetailerRegisterForm()
     return render(request, "users/retailer_register.html", {"form": form})
 
+
+def forgot_password_page(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, "No account found with this email.")
+            return redirect("forgot_password_page")
+
+        # Generate reset link
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        domain = get_current_site(request).domain
+
+        reset_link = f"http://{domain}/user/reset-password/{uid}/{token}/"
+
+        # Email message
+        send_mail(
+            subject="Reset Your Password",
+            message=f"Click the link to reset your password:\n{reset_link}",
+            from_email=None,
+            recipient_list=[email]
+        )
+
+        messages.success(request, "Password reset link sent to your email.")
+        return redirect("login_page")
+
+    return render(request, "users/forgot_password.html")
+
+
+
+def reset_password_page(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and token_generator.check_token(user, token):
+        if request.method == "POST":
+            password = request.POST.get("password")
+            user.set_password(password)
+            user.save()
+            messages.success(request, "Password reset successfully. Please login.")
+            return redirect("login_page")
+        return render(request, "users/reset_password.html")
+    else:
+        messages.error(request, "Invalid password reset link.")
+        return redirect("login_page")
 
 
 # ---------------------------

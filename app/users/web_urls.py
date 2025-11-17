@@ -11,4 +11,6 @@ urlpatterns = [
     path("addresses/add/", web_views.address_create_page, name="address_create_page"),
     path("addresses/<int:pk>/edit/", web_views.address_edit_page, name="address_edit_page"),
     path("addresses/<int:pk>/delete/", web_views.address_delete_page, name="address_delete_page"),
+    path("forgot-password/", web_views.forgot_password_page, name="forgot_password_page"),
+    path("reset-password/<uidb64>/<token>/", web_views.reset_password_page, name="reset_password_page"),
 ]
