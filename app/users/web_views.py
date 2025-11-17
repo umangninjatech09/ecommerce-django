@@ -5,6 +5,8 @@ from django.contrib import messages
 from .forms import RegisterForm, LoginForm, AddressForm, RetailerRegisterForm
 from .models import Address
 from app.products.models import Product, Category
+from django.db.models import Sum
+from django.apps import apps
 
 
 
@@ -97,13 +99,53 @@ def logout_page(request):
 # ---------------------------
 # Profile Page
 # ---------------------------
+# @login_required
+# def profile_page(request):
+#     orders = request.user.orders.order_by("-created_at")
+#     return render(request, "users/profile.html", {
+#         "user": request.user,
+#         "orders": orders
+#     })
+
 @login_required
 def profile_page(request):
+    # fetch user orders
     orders = request.user.orders.order_by("-created_at")
-    return render(request, "users/profile.html", {
+
+    # basic stats
+    total_orders = orders.count()
+    total_spent = orders.aggregate(total=Sum("total_amount"))["total"] or 0
+
+    # recent orders for quick view
+    recent_orders = orders[:5]
+
+    # try to compute retailer product count if product model has an owner field
+    products_count = None
+    if getattr(request.user, "is_retailer", False):
+        try:
+            Product = apps.get_model("products", "Product")
+            # attempt a common ownership field; try multiple possibilities
+            # this will fail silently if fields don't exist
+            try:
+                products_count = Product.objects.filter(created_by=request.user, is_deleted=False).count()
+            except Exception:
+                try:
+                    products_count = Product.objects.filter(seller=request.user, is_deleted=False).count()
+                except Exception:
+                    # can't determine seller relationship — set None
+                    products_count = None
+        except LookupError:
+            products_count = None
+
+    context = {
         "user": request.user,
-        "orders": orders
-    })
+        "orders": orders,
+        "total_orders": total_orders,
+        "total_spent": total_spent,
+        "recent_orders": recent_orders,
+        "products_count": products_count,
+    }
+    return render(request, "users/profile.html", context)
 
 
 # ---------------------------
