@@ -126,3 +126,7 @@ AUTHENTICATION_BACKENDS = [
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+# EMAIL SETTINGS — Console (for development)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
