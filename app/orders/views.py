@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from app.carts.utils import get_user_cart
 from app.orders.models import Order, OrderItem
 from app.orders.utils import generate_order_number
+from app.products.models import Product
+
 
 
 @login_required
@@ -74,3 +76,32 @@ def order_detail_page(request, order_id):
 def order_success_page(request, order_no):
     order = Order.objects.get(order_no=order_no)
     return render(request, "orders/order_success.html", {"order": order})
+
+
+@login_required
+def buy_now_page(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    address = request.user.addresses.filter(is_deleted=False).first()
+
+    if request.method == "POST":
+        order = Order.objects.create(
+            user=request.user,
+            address=address,
+            order_no=generate_order_number(),
+            total_amount=product.discount_price or product.price,
+        )
+
+        OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=1,
+            price=product.discount_price or product.price,
+            subtotal=product.discount_price or product.price,
+        )
+
+        return redirect("order_success_page", order_no=order.order_no)
+
+    return render(request, "orders/buy_now_page.html", {
+        "product": product,
+        "address": address,
+    })

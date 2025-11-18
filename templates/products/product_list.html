@@ -1,30 +1,46 @@
 {% extends "base.html" %}
-{% block title %}Products | E-Shop{% endblock %}
+{% block title %}Products - {{ category.name|default:"All" }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">Our Products</h2>
+<div class="row">
+  <div class="col-md-3">
+    <div class="card p-3 mb-3">
+      <h6>Filters</h6>
+      <!-- add filter UI -->
+      <p class="small-muted">(Add your filters here)</p>
+    </div>
+  </div>
 
-  <div class="row g-4">
-    {% for product in products %}
+  <div class="col-md-9">
+    <h4 class="mb-3">{{ category.name|default:"Products" }}</h4>
+    <div class="row g-3">
+      {% for product in products %}
       <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm product-card">
-          <img src="{{ product.thumbnail.url }}" class="card-img-top" alt="{{ product.name }}">
-          <div class="card-body text-center">
-            <h6 class="fw-bold">{{ product.name }}</h6>
-            {% if product.discount_price %}
-              <p class="text-muted text-decoration-line-through">₹{{ product.price }}</p>
-              <p class="price text-danger fw-bold">₹{{ product.discount_price }}</p>
-            {% else %}
-              <p class="price text-primary fw-bold">₹{{ product.price }}</p>
-            {% endif %}
-            <a href="{% url 'product_detail_page' product.slug %}" class="btn btn-sm btn-outline-primary">View</a>
+        <div class="product-card text-center p-2">
+          {% if product.thumbnail %}<img src="{{ product.thumbnail.url }}" class="img-fluid mb-2" style="height:140px;object-fit:contain;">{% else %}
+            <img src="https://via.placeholder.com/200x150" class="img-fluid mb-2">
+          {% endif %}
+          <h6 class="mb-1">{{ product.name|truncatechars:50 }}</h6>
+          {% if product.discount_price %}
+            <div><span class="price">₹{{ product.discount_price }}</span> <small class="strike ms-2">₹{{ product.price }}</small></div>
+          {% else %}
+            <div class="price">₹{{ product.price }}</div>
+          {% endif %}
+          <div class="mt-2">
+            <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-primary me-1">View</a>
+            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-primary">Add</a>
           </div>
         </div>
       </div>
-    {% empty %}
-      <p>No products available.</p>
-    {% endfor %}
+      {% endfor %}
+    </div>
+
+    <!-- pagination placeholder -->
+    <div class="mt-4 text-center">
+      {% if is_paginated %}
+        {% bootstrap_pagination page_obj %}
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

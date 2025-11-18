@@ -2,66 +2,47 @@
 {% block title %}Checkout{% endblock %}
 
 {% block content %}
-
-<h2 class="mb-4">Checkout</h2>
-
 <div class="row">
+  <div class="col-md-7">
+    <div class="card p-3 mb-3">
+      <h5>Select Delivery Address</h5>
 
-    <!-- LEFT SECTION - Address Selection -->
-    <div class="col-md-7">
-
-        <h4>Select Delivery Address</h4>
-
-        {% if addresses %}
-            <form method="POST">
-                {% csrf_token %}
-
-                <!-- Address List -->
-                {% for address in addresses %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <label class="d-block">
-                            <input type="radio" name="address_id" value="{{ address.id }}" required>
-                            <strong>{{ address.receiver_name }}</strong><br>
-                            {{ address.address_line }}, {{ address.city }}, {{ address.state }}<br>
-                            {{ address.country }} - {{ address.postal_code }}<br>
-                            Phone: {{ address.phone }}
-                        </label>
-                    </div>
-                </div>
-                {% endfor %}
-
-                <button class="btn btn-success btn-lg mt-3">Place Order</button>
-            </form>
-
-        {% else %}
-            <p>No address found. Add one in your profile.</p>
-        {% endif %}
-    </div>
-
-    <!-- RIGHT SECTION - Order Summary -->
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-body">
-
-                <h4>Order Summary</h4>
-                <hr>
-
-                {% for item in items %}
-                    <p>
-                        {{ item.product.name }}  
-                        (x{{ item.quantity }})  
-                        <span class="float-end">₹{{ item.total_price }}</span>
-                    </p>
-                {% endfor %}
-
-                <hr>
-                <h4>Total: ₹{{ total }}</h4>
-
+      {% if addresses %}
+        <form method="post">
+          {% csrf_token %}
+          {% for address in addresses %}
+            <div class="form-check card p-2 mb-2">
+              <label class="form-check-label w-100">
+                <input class="form-check-input me-2" type="radio" name="address_id" value="{{ address.id }}" {% if forloop.first %}checked{% endif %}>
+                <strong>{{ address.receiver_name }}</strong> — {{ address.phone }}<br>
+                {{ address.address_line }}, {{ address.city }}, {{ address.state }} — {{ address.postal_code }}
+              </label>
             </div>
-        </div>
+          {% endfor %}
+          <button class="btn btn-primary mt-2">Place Order</button>
+        </form>
+      {% else %}
+        <p>No saved addresses. <a href="{% url 'address_list_page' %}">Add an address</a></p>
+      {% endif %}
     </div>
+  </div>
 
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h5>Order Summary</h5>
+      <hr>
+      {% for item in items %}
+        <div class="d-flex justify-content-between">
+          <div>{{ item.product.name }} (x{{ item.quantity }})</div>
+          <div>₹{{ item.total_price }}</div>
+        </div>
+      {% endfor %}
+      <hr>
+      <div class="d-flex justify-content-between">
+        <strong>Total</strong>
+        <strong>₹{{ total }}</strong>
+      </div>
+    </div>
+  </div>
 </div>
-
 {% endblock %}

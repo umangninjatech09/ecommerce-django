@@ -1,37 +1,35 @@
 {% extends "base.html" %}
-{% block title %}{{ product.name }} | E-Shop{% endblock %}
+{% block title %}{{ product.name }} - E-Shop{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-5">
-      <img src="{{ product.thumbnail.url }}" class="img-fluid rounded shadow" alt="{{ product.name }}">
-    </div>
-    <div class="col-md-7">
-      <h3>{{ product.name }}</h3>
-      <p class="text-muted">{{ product.category.name }}</p>
-      {% if product.discount_price %}
-        <p class="text-muted text-decoration-line-through">₹{{ product.price }}</p>
-        <h4 class="text-danger">₹{{ product.discount_price }}</h4>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card p-3">
+      {% if product.thumbnail %}
+        <img src="{{ product.thumbnail.url }}" class="img-fluid" style="max-height:480px;object-fit:contain;">
       {% else %}
-        <h4 class="text-primary">₹{{ product.price }}</h4>
+        <img src="https://via.placeholder.com/600x400" class="img-fluid">
       {% endif %}
-      <p>{{ product.description }}</p>
-
-      <button class="btn btn-warning btn-lg mt-2">Add to Cart</button>
     </div>
   </div>
 
-  {% if product.images.all %}
-    <hr>
-    <h5 class="mt-4 mb-3">More Images</h5>
-    <div class="row g-3">
-      {% for image in product.images.all %}
-        <div class="col-md-3 col-sm-4 col-6">
-          <img src="{{ image.image.url }}" class="img-fluid rounded border">
-        </div>
-      {% endfor %}
+  <div class="col-md-6">
+    <h3>{{ product.name }}</h3>
+    <p class="small-muted">{{ product.category.name }}</p>
+
+    {% if product.discount_price %}
+      <h4 class="price">₹{{ product.discount_price }}</h4>
+      <div class="strike">₹{{ product.price }}</div>
+    {% else %}
+      <h4 class="price">₹{{ product.price }}</h4>
+    {% endif %}
+
+    <p class="mt-3">{{ product.description|linebreaksbr }}</p>
+
+    <div class="mt-4 d-flex gap-2">
+      <a href="{% url 'add_to_cart' product.id %}" class="btn btn-lg btn-primary">Add to Cart</a>
+      <a href="{% url 'buy_now' product.id %}" class="btn btn-lg btn-outline-success">Buy Now</a>
     </div>
-  {% endif %}
+  </div>
 </div>
 {% endblock %}

@@ -31,3 +31,7 @@ def home_page(request):
     return render(request, "products/home.html", {"category_data": category_data})
 
 
+def product_search(request):
+    query = request.GET.get("q", "")
+    products = Product.objects.filter(name__icontains=query, is_deleted=False)
+    return render(request, "products/product_list.html", {"products": products, "search": query})

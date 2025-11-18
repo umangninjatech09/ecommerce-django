@@ -1,54 +1,33 @@
 {% extends "base.html" %}
-{% block title %}My Addresses | E-Shop{% endblock %}
+{% block title %}My Addresses{% endblock %}
 
 {% block content %}
-<style>
-  .address-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  .btn-add {
-    background-color: #2874f0;
-    color: white;
-  }
-  .btn-add:hover {
-    background-color: #1f5ed8;
-  }
-</style>
-
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>My Addresses</h3>
-    <a href="{% url 'address_create_page' %}" class="btn btn-add">+ Add New Address</a>
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5>My Addresses</h5>
+    <a href="{% url 'address_create_page' %}" class="btn btn-primary">Add Address</a>
   </div>
 
-  {% for address in addresses %}
-  <div class="address-card">
-    <h5>{{ address.receiver_name }}</h5>
-    <p>{{ address.address_line }}, {{ address.city }}, {{ address.state }}, {{ address.country }}</p>
-    <p><strong>Phone:</strong> {{ address.phone }}</p>
-    <p><strong>Pincode:</strong> {{ address.postal_code }}</p>
-
-    {% if address.is_default %}
-      <span class="badge bg-success">Default</span>
-    {% endif %}
-
-    <div class="mt-3">
-      <a href="{% url 'address_edit_page' address.id %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
-      <form method="post" action="{% url 'address_delete_page' address.id %}" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-      </form>
+  {% if addresses %}
+    <div class="list-group">
+      {% for address in addresses %}
+        <div class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <div>
+              <strong>{{ address.receiver_name }}</strong><br>
+              {{ address.address_line }}, {{ address.city }}, {{ address.state }} - {{ address.postal_code }}<br>
+              Phone: {{ address.phone }}
+            </div>
+            <div class="text-end">
+              <a href="{% url 'address_edit_page' address.id %}" class="btn btn-sm btn-outline-primary mb-2">Edit</a>
+              <a href="{% url 'address_delete_page' address.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
-  </div>
-  {% empty %}
-  <div class="text-center mt-5">
-    <p>No addresses found.</p>
-    <a href="{% url 'address_create_page' %}" class="btn btn-primary">+ Add Address</a>
-  </div>
-  {% endfor %}
+  {% else %}
+    <p class="small-muted">You have no addresses saved.</p>
+  {% endif %}
 </div>
 {% endblock %}

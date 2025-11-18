@@ -1,0 +1,55 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background:#2874f0;">
+  <div class="container">
+
+    <a class="navbar-brand fw-bold" href="{% url 'home_page' %}">E-Shop</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <form class="d-flex ms-auto me-3" method="GET" action="{% url 'product_search' %}">
+        <input class="form-control form-control-sm" type="search" placeholder="Search products…">
+      </form>
+
+      <ul class="navbar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link text-white" href="{% url 'cart_page' %}">🛒 Cart</a>
+        </li>
+
+        {% if user.is_authenticated %}
+
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'profile_page' %}">{{ user.username }}</a>
+          </li>
+
+          {% if user.is_retailer %}
+          <li class="nav-item">
+            <a class="nav-link text-warning fw-bold" href="/admin-panel/">Retailer Panel</a>
+          </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'logout_page' %}">Logout</a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'login_page' %}">Login</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{% url 'register_page' %}">Register</a>
+          </li>
+
+        {% endif %}
+      </ul>
+
+    </div>
+  </div>
+</nav>
