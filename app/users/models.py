@@ -30,3 +30,6 @@ class Address(BaseModel):
     country = models.CharField(max_length=100)
     postal_code = models.CharField(max_length=20)
     is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.receiver_name} - {self.address_line}, {self.city}, {self.state}, {self.country}"

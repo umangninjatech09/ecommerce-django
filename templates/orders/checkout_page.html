@@ -1,67 +1,120 @@
 {% extends "base.html" %}
-{% block title %}Checkout{% endblock %}
+{% load static %}
+{% block title %}Checkout - E-Shop{% endblock %}
 
 {% block content %}
+<style>
+.checkout-wrap { margin-top: 18px; }
+.checkout-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.address-card {
+    padding: 12px;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: block;
+    transition: 0.15s;
+    cursor: pointer;
+}
+.address-card:hover { border-color: #bcd9ff; }
+.address-card .meta { font-size: 13px; color: #555; }
+.address-selected {
+    border-color: #2874f0 !important;
+    background: #f0f7ff;
+}
+.order-summary {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.order-summary .line { display:flex; justify-content:space-between; padding:6px 0; }
+.order-summary .total { font-weight:700; font-size:1.05rem; }
+.small-muted { color: #6c757d; font-size: .9rem; }
+</style>
 
-<h2 class="mb-4">Checkout</h2>
-
-<div class="row">
-
-    <!-- LEFT SECTION - Address Selection -->
-    <div class="col-md-7">
-
-        <h4>Select Delivery Address</h4>
+<div class="checkout-wrap">
+  <div class="row">
+    <div class="col-lg-7">
+      <div class="checkout-box">
+        <h5 class="mb-3">Select Delivery Address</h5>
 
         {% if addresses %}
-            <form method="POST">
-                {% csrf_token %}
+        <form method="post" id="checkout-form">
+          {% csrf_token %}
 
-                <!-- Address List -->
-                {% for address in addresses %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <label class="d-block">
-                            <input type="radio" name="address_id" value="{{ address.id }}" required>
-                            <strong>{{ address.receiver_name }}</strong><br>
-                            {{ address.address_line }}, {{ address.city }}, {{ address.state }}<br>
-                            {{ address.country }} - {{ address.postal_code }}<br>
-                            Phone: {{ address.phone }}
-                        </label>
-                    </div>
-                </div>
-                {% endfor %}
+          <div id="addresses-list">
+            {% for addr in addresses %}
+            <label class="address-card {% if addr.id == selected_id %}address-selected{% endif %}" data-id="{{ addr.id }}">
+              <input type="radio" name="address" value="{{ addr.id }}" style="margin-right:8px;"
+                     {% if forloop.first and not selected_id %}checked{% endif %}
+                     {% if addr.id == selected_id %}checked{% endif %}>
+              <strong>{{ addr.receiver_name }}</strong> — {{ addr.phone }}<br>
+              <span class="meta">{{ addr.address_line }}, {{ addr.city }}, {{ addr.state }} — {{ addr.postal_code }}</span>
+            </label>
+            {% endfor %}
+          </div>
 
-                <button class="btn btn-success btn-lg mt-3">Place Order</button>
-            </form>
+          <div class="d-flex gap-2 mt-2">
+            {# Replace below URL name if your add-address URL name differs. #}
+            <a href="{% url 'address_create_page' %}" class="btn btn-outline-primary btn-sm">+ Add New Address</a>
 
+            <button type="submit" class="btn btn-primary btn-sm">Place Order</button>
+          </div>
+
+        </form>
         {% else %}
-            <p>No address found. Add one in your profile.</p>
+          <p>You have no saved addresses.</p>
+          <a href="{% url 'address_create_page' %}" class="btn btn-primary btn-sm">Add Address</a>
         {% endif %}
+
+      </div>
     </div>
 
-    <!-- RIGHT SECTION - Order Summary -->
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-body">
-
-                <h4>Order Summary</h4>
-                <hr>
-
-                {% for item in items %}
-                    <p>
-                        {{ item.product.name }}  
-                        (x{{ item.quantity }})  
-                        <span class="float-end">₹{{ item.total_price }}</span>
-                    </p>
-                {% endfor %}
-
-                <hr>
-                <h4>Total: ₹{{ total }}</h4>
-
+    <div class="col-lg-5">
+      <div class="order-summary">
+        <h5>Order Summary</h5>
+        <hr>
+        {% if items %}
+          {% for item in items %}
+            <div class="line">
+              <div>
+                <div class="small-muted">{{ item.product.name }} <small class="text-muted"> (x{{ item.quantity }})</small></div>
+              </div>
+              <div>₹{{ item.total_price }}</div>
             </div>
-        </div>
+          {% endfor %}
+          <hr>
+          <div class="line total">
+            <div>Total</div>
+            <div>₹{{ total }}</div>
+          </div>
+        {% else %}
+          <p>Your cart is empty.</p>
+        {% endif %}
+      </div>
     </div>
-
+  </div>
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const addressCards = document.querySelectorAll(".address-card");
+  addressCards.forEach(card => {
+    card.addEventListener("click", function(e) {
+      // click the radio inside the label
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio) { radio.checked = true; }
+
+      // visually highlight
+      addressCards.forEach(c => c.classList.remove("address-selected"));
+      this.classList.add("address-selected");
+    });
+  });
+});
+</script>
 {% endblock %}

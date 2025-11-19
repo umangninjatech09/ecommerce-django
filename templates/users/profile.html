@@ -1,215 +1,47 @@
 {% extends "base.html" %}
-{% block title %}My Profile | E-Shop{% endblock %}
-
-{% block extra_head %}
-<style>
-  /* Profile container */
-  .profile-wrapper {
-    max-width: 1100px;
-    margin: 32px auto;
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 24px;
-  }
-
-  /* left card */
-  .card-left {
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  }
-  .card-left .top {
-    background: linear-gradient(90deg,#2874f0,#1a61d6);
-    color: #fff;
-    padding: 26px 18px;
-    text-align: center;
-  }
-  .avatar {
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    background: #fff;
-    display: inline-block;
-    margin-bottom: 10px;
-    line-height: 88px;
-    font-weight: 700;
-    color: #2874f0;
-  }
-  .card-left .body {
-    padding: 18px;
-    background: #fff;
-  }
-  .info-row { margin-bottom: 8px; }
-  .label { color: #6c757d; font-size: 0.9rem; }
-  .value { font-weight: 600; font-size: 1rem; }
-
-  /* action buttons */
-  .profile-actions .btn {
-    min-width: 140px;
-    margin-right: 10px;
-  }
-
-  /* right column: stats and orders */
-  .card-right {
-    border-radius: 10px;
-    padding: 18px;
-    background: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  }
-
-  .stats {
-    display:flex;
-    gap:12px;
-    margin-bottom: 18px;
-  }
-  .stat {
-    flex:1;
-    padding: 12px;
-    border-radius: 8px;
-    background: #f8f9fb;
-    text-align: center;
-  }
-  .stat .big { font-size: 1.35rem; font-weight: 700; color:#0b3d91; }
-  .stat .small { color:#6c757d; font-size:0.9rem; }
-
-  .recent-orders table tbody tr td { vertical-align: middle; }
-
-  /* responsive */
-  @media (max-width: 991px) {
-    .profile-wrapper { grid-template-columns: 1fr; padding: 0 16px; }
-    .profile-actions .btn { margin-bottom: 8px; }
-  }
-</style>
-{% endblock %}
+{% block title %}My Profile{% endblock %}
 
 {% block content %}
-<div class="profile-wrapper">
+<div class="row">
+  <div class="col-md-4">
+    <div class="card p-3 text-center">
+      <div style="font-size:48px; color:var(--flipkart-blue); font-weight:700;">{{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}</div>
+      <h5 class="mt-2">{{ user.get_full_name|default:user.username }}</h5>
+      <p class="small-muted">{{ user.email }}</p>
 
-  <!-- LEFT: Profile Card -->
-  <div class="card-left">
-    <div class="top">
-      <div class="avatar">
-        {% if user.first_name %}
-          {{ user.first_name|slice:":1"|upper }}
-        {% else %}
-          {{ user.username|slice:":1"|upper }}
-        {% endif %}
-      </div>
-      <div style="font-size:1.1rem; font-weight:700;">{{ user.get_full_name|default:user.username }}</div>
-      <div style="font-size:0.95rem; opacity:0.9;">{{ user.email }}</div>
-    </div>
-
-    <div class="body">
-      <div class="info-row">
-        <div class="label">Joined</div>
-        <div class="value">{{ user.date_joined|date:"d M, Y" }}</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Phone</div>
-        <div class="value">{{ user.phone_number|default:"—" }}</div>
-      </div>
-
-      <hr>
-
-      <div class="profile-actions d-flex flex-column gap-2 mt-3">
-
-        <a href="{% url 'address_list_page' %}" 
-           class="btn btn-primary w-100">
-           Manage Addresses
-        </a>
-    
-        <a href="{% url 'logout_page' %}" 
-           class="btn btn-outline-danger w-100">
-           Logout
-        </a>
-    
+      <div class="d-grid gap-2 mt-3">
+        <a class="btn btn-primary" href="{% url 'address_list_page' %}">Manage Addresses</a>
+        <a class="btn btn-outline-danger" href="{% url 'logout_page' %}">Logout</a>
         {% if user.is_retailer %}
-        <a href="/admin-panel/" 
-           class="btn btn-warning text-dark w-100">
-           Retailer Panel
-        </a>
+          <a class="btn btn-warning text-dark" href="/admin-panel/">Retailer Panel</a>
         {% endif %}
-    
       </div>
-    
-
-      {% if user.is_staff %}
-        <div class="mt-3">
-          <a href="/admin/" class="btn btn-secondary">Django Admin</a>
-        </div>
-      {% endif %}
     </div>
   </div>
 
-  <!-- RIGHT: Stats & Orders -->
-  <div class="card-right">
-
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat">
-        <div class="big">{{ total_orders }}</div>
-        <div class="small">Total Orders</div>
-      </div>
-
-      <div class="stat">
-        <div class="big">₹{{ total_spent|floatformat:2 }}</div>
-        <div class="small">Total Spent</div>
-      </div>
-
-      <div class="stat">
-        {% if products_count is not None %}
-          <div class="big">{{ products_count }}</div>
-          <div class="small">My Products</div>
-        {% else %}
-          <div class="big">—</div>
-          <div class="small">Products</div>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- Quick actions -->
-    <div class="mb-3 d-flex gap-2">
-      <a href="{% url 'order_list_page' %}" class="btn btn-outline-primary">View All Orders</a>
-      <a href="{% url 'cart_page' %}" class="btn btn-outline-success">Go to Cart</a>
-    </div>
-
-    <!-- Recent Orders -->
-    <div class="recent-orders">
-      <h5 class="mb-2">Recent Orders</h5>
-
-      {% if recent_orders %}
-      <div class="table-responsive">
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th>Order No</th>
-              <th>Status</th>
-              <th>Total</th>
-              <th>Date</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for order in recent_orders %}
-              <tr>
-                <td class="align-middle">{{ order.order_no }}</td>
-                <td class="align-middle">{{ order.order_status|title }}</td>
-                <td class="align-middle">₹{{ order.total_amount }}</td>
-                <td class="align-middle">{{ order.created_at|date:"d M Y" }}</td>
-                <td class="align-middle">
-                  <a href="{% url 'order_detail_page' order.id %}" class="btn btn-sm btn-primary">View</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <div class="col-md-8">
+    <div class="card p-3">
+      <h5>My Orders</h5>
+      {% if orders %}
+        <ul class="list-group">
+          {% for order in orders %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ order.order_no }}</strong><br>
+                <small class="small-muted">{{ order.created_at|date:"d M Y" }}</small>
+              </div>
+              <div class="text-end">
+                <div>{{ order.order_status|title }}</div>
+                <div class="small-muted">₹{{ order.total_amount }}</div>
+                <a class="btn btn-sm btn-primary mt-1" href="{% url 'order_detail_page' order.id %}">View</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
       {% else %}
-        <p class="text-muted">No recent orders yet. Start shopping now!</p>
+        <p class="small-muted">No orders yet.</p>
       {% endif %}
     </div>
-
   </div>
 </div>
 {% endblock %}

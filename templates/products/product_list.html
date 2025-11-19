@@ -1,30 +1,153 @@
 {% extends "base.html" %}
-{% block title %}Products | E-Shop{% endblock %}
+{% load static %}
+{% block title %}Products - E-Shop{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">Our Products</h2>
 
-  <div class="row g-4">
-    {% for product in products %}
-      <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm product-card">
-          <img src="{{ product.thumbnail.url }}" class="card-img-top" alt="{{ product.name }}">
-          <div class="card-body text-center">
-            <h6 class="fw-bold">{{ product.name }}</h6>
-            {% if product.discount_price %}
-              <p class="text-muted text-decoration-line-through">₹{{ product.price }}</p>
-              <p class="price text-danger fw-bold">₹{{ product.discount_price }}</p>
+<style>
+  .filter-box {
+    background:white;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .product-card {
+    background:white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: .2s;
+  }
+  .product-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+  .product-img {
+    height: 170px;
+    object-fit: contain;
+  }
+  .price {
+    color: #388e3c;
+    font-weight: 700;
+  }
+  .strike {
+    text-decoration: line-through;
+    color: #777;
+    font-size: 0.85rem;
+  }
+  .sort-btn {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .sort-btn:hover {
+    background: #f1f3f6;
+  }
+</style>
+
+
+<div class="row">
+
+  <!-- LEFT FILTERS -->
+  <div class="col-md-3">
+    <div class="filter-box mb-4">
+      <h5 class="mb-3">Filters</h5>
+
+      <h6 class="text-muted">Categories</h6>
+      <hr>
+
+      {% for category in categories %}
+        <a href="{% url 'product_list' category.slug %}"
+           class="d-block mb-2 small text-decoration-none">
+          {{ category.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <!-- RIGHT PRODUCT GRID -->
+  <div class="col-md-9">
+
+    <!-- Sort Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5>{{ page_title }}</h5>
+
+      <div>
+        <a href="?sort=low" class="sort-btn">Price — Low to High</a>
+        <a href="?sort=high" class="sort-btn">Price — High to Low</a>
+        <a href="?sort=new" class="sort-btn">Newest First</a>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="row g-3">
+      {% for product in products %}
+      <div class="col-md-3 col-6">
+        <div class="product-card text-center">
+
+          <a href="{% url 'product_detail' product.slug %}">
+            {% if product.thumbnail %}
+              <img src="{{ product.thumbnail.url }}" class="product-img img-fluid mb-2">
             {% else %}
-              <p class="price text-primary fw-bold">₹{{ product.price }}</p>
+              <img src="https://via.placeholder.com/200" class="product-img img-fluid mb-2">
             {% endif %}
-            <a href="{% url 'product_detail_page' product.slug %}" class="btn btn-sm btn-outline-primary">View</a>
+          </a>
+
+          <h6 class="mb-1" style="font-size:0.9rem;">
+            {{ product.name|truncatechars:45 }}
+          </h6>
+
+          {% if product.discount_price %}
+            <div class="price">₹{{ product.discount_price }}</div>
+            <div class="strike">₹{{ product.price }}</div>
+          {% else %}
+            <div class="price">₹{{ product.price }}</div>
+          {% endif %}
+
+          <div class="mt-2">
+            <a href="{% url 'product_detail' product.slug %}" 
+               class="btn btn-sm btn-outline-primary me-1">View</a>
+
+            <a href="{% url 'add_to_cart' product.id %}" 
+               class="btn btn-sm btn-primary">Add</a>
           </div>
+
         </div>
       </div>
-    {% empty %}
-      <p>No products available.</p>
-    {% endfor %}
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+      <nav>
+        <ul class="pagination">
+
+          {% if products.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+          </li>
+          {% endif %}
+
+          <li class="page-item active">
+            <a class="page-link">{{ products.number }}</a>
+          </li>
+
+          {% if products.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+          </li>
+          {% endif %}
+
+        </ul>
+      </nav>
+    </div>
+
   </div>
+
 </div>
+
 {% endblock %}

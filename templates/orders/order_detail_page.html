@@ -8,7 +8,17 @@
 
     <p><strong>Status:</strong> {{ order.order_status }}</p>
     <p><strong>Payment:</strong> {{ order.payment_status }}</p>
-    <p><strong>Shipping Address:</strong><br>{{ order.address }}</p>
+
+    <p><strong>Shipping Address:</strong><br>
+    {% if order.address %}
+        <strong>{{ order.address.receiver_name }}</strong> — {{ order.address.phone }} <br>
+        {{ order.address.address_line }} <br>
+        {{ order.address.city }}, {{ order.address.state }} — {{ order.address.postal_code }} <br>
+        {{ order.address.country }}
+    {% else %}
+        <em>No address found</em>
+    {% endif %}
+    </p>
 
     <hr>
 
@@ -27,7 +37,9 @@
             {% for item in order.items.all %}
             <tr>
                 <td>
-                    <img src="{{ item.product.thumbnail.url }}" width="60" class="me-2 rounded">
+                    {% if item.product.thumbnail %}
+                        <img src="{{ item.product.thumbnail.url }}" width="60" class="me-2 rounded">
+                    {% endif %}
                     {{ item.product.name }}
                 </td>
                 <td>{{ item.quantity }}</td>

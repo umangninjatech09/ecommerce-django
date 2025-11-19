@@ -9,15 +9,23 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_deleted=False)
     cart = get_user_cart(request)
 
-    cart_item, created = CartItem.objects.get_or_create(
+    # Check active cart item only
+    cart_item = CartItem.objects.filter(
         cart=cart,
         product=product,
-        defaults={"quantity": 1, "price": product.discount_price or product.price}
-    )
+        is_deleted=False
+    ).first()
 
-    if not created:
+    if cart_item:
         cart_item.quantity += 1
         cart_item.save()
+    else:
+        cart_item = CartItem.objects.create(
+            cart=cart,
+            product=product,
+            quantity=1,
+            price=product.discount_price or product.price
+        )
 
     messages.success(request, f"{product.name} added to cart.")
     return redirect("home_page")
