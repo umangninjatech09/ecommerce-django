@@ -5,37 +5,47 @@ from app.carts.utils import get_user_cart
 from app.orders.models import Order, OrderItem
 from app.orders.utils import generate_order_number
 from app.products.models import Product
+from app.users.models import Address
+
 
 
 
 @login_required
 def checkout_page(request):
+    # get cart and visible items
     cart = get_user_cart(request)
-    items = cart.items.filter(is_deleted=False)
+    items = cart.items.filter(is_deleted=False).select_related('product')
     total = sum(item.total_price for item in items)
 
-    # Fetch user's saved addresses
-    addresses = request.user.addresses.filter(is_deleted=False)
+    # get user's saved addresses (not deleted)
+    addresses = request.user.addresses.filter(is_deleted=False).order_by('-is_default', '-created_at')
 
+    # default selected address id (first default or first address)
+    selected_id = None
+    default_addr = addresses.filter(is_default=True).first()
+    if default_addr:
+        selected_id = default_addr.id
+    elif addresses:
+        selected_id = addresses.first().id
+
+    # POST: place order
     if request.method == "POST":
-        address_id = request.POST.get("address_id")
-
+        address_id = request.POST.get("address")
         if not address_id:
-            messages.error(request, "Please select an address.")
+            messages.error(request, "Please select a delivery address.")
             return redirect("checkout_page")
 
-        # Get selected address
-        selected_address = request.user.addresses.get(id=address_id)
+        address = get_object_or_404(Address, id=address_id, user=request.user, is_deleted=False)
 
-        # Create order
+        # create order
         order = Order.objects.create(
-        user=request.user,
-        address=selected_address,
-        order_no=generate_order_number(),
-        total_amount=total,
-    )
+            user=request.user,
+            address=address,
+            order_no=generate_order_number(),
+            total_amount=total,
+        )
 
-        # Create order items
+        # create order items
         for item in items:
             OrderItem.objects.create(
                 order=order,
@@ -45,17 +55,17 @@ def checkout_page(request):
                 subtotal=item.total_price,
             )
 
-        # Clear cart (soft delete items)
-        cart.items.update(is_deleted=True)
+        # soft-delete the cart items
+        cart.items.filter(is_deleted=False).update(is_deleted=True)
 
         messages.success(request, "Order placed successfully!")
         return redirect("order_success_page", order_no=order.order_no)
 
     return render(request, "orders/checkout_page.html", {
-        "cart": cart,
+        "addresses": addresses,
         "items": items,
         "total": total,
-        "addresses": addresses,   # 👉 pass addresses to template
+        "selected_id": selected_id,
     })
 
 
@@ -78,30 +88,38 @@ def order_success_page(request, order_no):
     return render(request, "orders/order_success.html", {"order": order})
 
 
+
 @login_required
 def buy_now_page(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    address = request.user.addresses.filter(is_deleted=False).first()
+    product = get_object_or_404(Product, id=product_id, is_deleted=False)
+    price = product.discount_price or product.price
+
+    addresses = request.user.addresses.filter(is_deleted=False)
 
     if request.method == "POST":
+        address_id = request.POST.get("address_id")
+        address = get_object_or_404(Address, id=address_id, user=request.user)
+
         order = Order.objects.create(
             user=request.user,
             address=address,
             order_no=generate_order_number(),
-            total_amount=product.discount_price or product.price,
+            total_amount=price,
         )
 
         OrderItem.objects.create(
             order=order,
             product=product,
             quantity=1,
-            price=product.discount_price or product.price,
-            subtotal=product.discount_price or product.price,
+            price=price,
+            subtotal=price,
         )
 
+        messages.success(request, "Order placed successfully!")
         return redirect("order_success_page", order_no=order.order_no)
 
     return render(request, "orders/buy_now_page.html", {
         "product": product,
-        "address": address,
+        "addresses": addresses,
+        "price": price,
     })

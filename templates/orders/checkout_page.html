@@ -1,48 +1,120 @@
 {% extends "base.html" %}
-{% block title %}Checkout{% endblock %}
+{% load static %}
+{% block title %}Checkout - E-Shop{% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-7">
-    <div class="card p-3 mb-3">
-      <h5>Select Delivery Address</h5>
+<style>
+.checkout-wrap { margin-top: 18px; }
+.checkout-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.address-card {
+    padding: 12px;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: block;
+    transition: 0.15s;
+    cursor: pointer;
+}
+.address-card:hover { border-color: #bcd9ff; }
+.address-card .meta { font-size: 13px; color: #555; }
+.address-selected {
+    border-color: #2874f0 !important;
+    background: #f0f7ff;
+}
+.order-summary {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.order-summary .line { display:flex; justify-content:space-between; padding:6px 0; }
+.order-summary .total { font-weight:700; font-size:1.05rem; }
+.small-muted { color: #6c757d; font-size: .9rem; }
+</style>
 
-      {% if addresses %}
-        <form method="post">
+<div class="checkout-wrap">
+  <div class="row">
+    <div class="col-lg-7">
+      <div class="checkout-box">
+        <h5 class="mb-3">Select Delivery Address</h5>
+
+        {% if addresses %}
+        <form method="post" id="checkout-form">
           {% csrf_token %}
-          {% for address in addresses %}
-            <div class="form-check card p-2 mb-2">
-              <label class="form-check-label w-100">
-                <input class="form-check-input me-2" type="radio" name="address_id" value="{{ address.id }}" {% if forloop.first %}checked{% endif %}>
-                <strong>{{ address.receiver_name }}</strong> — {{ address.phone }}<br>
-                {{ address.address_line }}, {{ address.city }}, {{ address.state }} — {{ address.postal_code }}
-              </label>
+
+          <div id="addresses-list">
+            {% for addr in addresses %}
+            <label class="address-card {% if addr.id == selected_id %}address-selected{% endif %}" data-id="{{ addr.id }}">
+              <input type="radio" name="address" value="{{ addr.id }}" style="margin-right:8px;"
+                     {% if forloop.first and not selected_id %}checked{% endif %}
+                     {% if addr.id == selected_id %}checked{% endif %}>
+              <strong>{{ addr.receiver_name }}</strong> — {{ addr.phone }}<br>
+              <span class="meta">{{ addr.address_line }}, {{ addr.city }}, {{ addr.state }} — {{ addr.postal_code }}</span>
+            </label>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex gap-2 mt-2">
+            {# Replace below URL name if your add-address URL name differs. #}
+            <a href="{% url 'address_create_page' %}" class="btn btn-outline-primary btn-sm">+ Add New Address</a>
+
+            <button type="submit" class="btn btn-primary btn-sm">Place Order</button>
+          </div>
+
+        </form>
+        {% else %}
+          <p>You have no saved addresses.</p>
+          <a href="{% url 'address_create_page' %}" class="btn btn-primary btn-sm">Add Address</a>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="order-summary">
+        <h5>Order Summary</h5>
+        <hr>
+        {% if items %}
+          {% for item in items %}
+            <div class="line">
+              <div>
+                <div class="small-muted">{{ item.product.name }} <small class="text-muted"> (x{{ item.quantity }})</small></div>
+              </div>
+              <div>₹{{ item.total_price }}</div>
             </div>
           {% endfor %}
-          <button class="btn btn-primary mt-2">Place Order</button>
-        </form>
-      {% else %}
-        <p>No saved addresses. <a href="{% url 'address_list_page' %}">Add an address</a></p>
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="col-md-5">
-    <div class="card p-3">
-      <h5>Order Summary</h5>
-      <hr>
-      {% for item in items %}
-        <div class="d-flex justify-content-between">
-          <div>{{ item.product.name }} (x{{ item.quantity }})</div>
-          <div>₹{{ item.total_price }}</div>
-        </div>
-      {% endfor %}
-      <hr>
-      <div class="d-flex justify-content-between">
-        <strong>Total</strong>
-        <strong>₹{{ total }}</strong>
+          <hr>
+          <div class="line total">
+            <div>Total</div>
+            <div>₹{{ total }}</div>
+          </div>
+        {% else %}
+          <p>Your cart is empty.</p>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const addressCards = document.querySelectorAll(".address-card");
+  addressCards.forEach(card => {
+    card.addEventListener("click", function(e) {
+      // click the radio inside the label
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio) { radio.checked = true; }
+
+      // visually highlight
+      addressCards.forEach(c => c.classList.remove("address-selected"));
+      this.classList.add("address-selected");
+    });
+  });
+});
+</script>
 {% endblock %}

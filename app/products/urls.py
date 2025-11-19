@@ -11,5 +11,6 @@ urlpatterns = [
     path("product/<slug:slug>/", web_views.product_detail_page, name="product_detail"),
     path("category/<slug:category_slug>/", web_views.product_list_page, name="product_list"),
     path("search/", web_views.product_search, name="product_search"),
-
+    path("products/category/<slug:slug>/", web_views.product_list_page, name="product_list"),
+    path("products/", web_views.product_list_page, name="all_products"),
 ]

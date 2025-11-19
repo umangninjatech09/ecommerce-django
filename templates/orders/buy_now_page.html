@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Buy Now - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    
+    <!-- LEFT: ADDRESS SELECTION -->
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h5>Select Delivery Address</h5>
+            <hr>
+
+            {% if addresses %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for address in addresses %}
+                    <div class="border rounded p-2 mb-2">
+                        <label class="d-flex align-items-start gap-2">
+                            <input type="radio" name="address_id" value="{{ address.id }}" required>
+                            <div>
+                                <strong>{{ address.receiver_name }}</strong> — {{ address.phone }}<br>
+                                {{ address.address_line }}<br>
+                                {{ address.city }}, {{ address.state }} — {{ address.postal_code }}
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+
+                    <button class="btn btn-success mt-2 w-100">Place Order</button>
+                </form>
+            {% else %}
+                <p>You have no saved addresses.</p>
+                <a href="{% url 'address_add_page' %}" class="btn btn-primary">Add Address</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Order Summary</h5>
+            <hr>
+
+            <div class="d-flex gap-3 align-items-center">
+                {% if product.thumbnail %}
+                    <img src="{{ product.thumbnail.url }}" width="100">
+                {% else %}
+                    <img src="https://via.placeholder.com/100" width="100">
+                {% endif %}
+                <div>
+                    <strong>{{ product.name }}</strong><br>
+                    ₹{{ price }}
+                </div>
+            </div>
+
+            <hr>
+
+            <h5>Total: ₹{{ price }}</h5>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
