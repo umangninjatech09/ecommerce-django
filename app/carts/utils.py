@@ -14,3 +14,11 @@ def get_user_cart(request):
 
     cart, created = Cart.objects.get_or_create(session_key=session_key, user=None)
     return cart
+
+
+def cart_count(request):
+    if request.user.is_authenticated:
+        cart = get_user_cart(request)
+        count = cart.items.filter(is_deleted=False).count()
+        return {"cart_count": count}
+    return {"cart_count": 0}

@@ -25,6 +25,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("wishlist/", include("app.wishlist.urls")),
     path("users/", include("app.users.urls")),
     path("", user_views.home_page, name="home_page"),
     path("user/", include("app.users.web_urls")),
@@ -33,6 +34,7 @@ urlpatterns = [
     # path("", include("app.products.web_urls")),  # 👈 add this for homepage
     path("cart/", include("app.carts.urls")),
     path("order/", include("app.orders.urls")),
+
 
 
 

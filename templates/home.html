@@ -3,9 +3,60 @@
 {% block title %}Home - E-Shop{% endblock %}
 
 {% block content %}
+
+<style>
+  .product-card {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: 0.2s;
+      position: relative;
+  }
+  .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+
+  .price { color:#388e3c; font-weight:700; }
+  .strike { text-decoration:line-through; color:#777; }
+
+  .wishlist-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    text-decoration: none;
+    z-index: 10;
+}
+
+.heart-red {
+    font-size: 12px;     /* red heart size */
+    color: #e53935;
+}
+
+.heart-grey {
+    font-size: 18px;     /* different size for grey */
+    color: #c7c7c7;
+}
+
+@media (max-width: 767px) {
+    .hero-wrap {
+      padding: 18px !important;
+      text-align: center;
+    }
+    .hero-wrap img {
+      display: none;
+    }
+    .category-side {
+      display: none;
+    }
+  }
+
+</style>
+
 <div class="row">
-  <div class="col-lg-3 d-none d-lg-block">
-    <!-- Vertical category list -->
+
+  <div class="col-lg-3 category-side d-none d-lg-block">
     <div class="card p-3 mb-4">
       <h6 class="mb-3">Categories</h6>
       {% for item in category_data %}
@@ -17,7 +68,8 @@
   </div>
 
   <div class="col-lg-9">
-    <!-- Hero / carousel -->
+
+    <!-- Hero Section -->
     <div class="mb-4 rounded" style="background:linear-gradient(90deg, #2874f0, #1a61d6); color:#fff; padding:28px;">
       <div class="d-flex justify-content-between align-items-center">
         <div>
@@ -28,10 +80,11 @@
       </div>
     </div>
 
-    <!-- category sections -->
+    <!-- Category product sections -->
     {% for item in category_data %}
       {% if item.products %}
       <section class="mb-4">
+
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h5 class="mb-0">{{ item.category.name }}</h5>
           <a href="{% url 'product_list' item.category.slug %}" class="small-muted small">View all</a>
@@ -41,6 +94,20 @@
           {% for product in item.products %}
           <div class="col-md-3 col-sm-6">
             <div class="product-card text-center">
+
+              <!-- ❤️ Wishlist Toggle -->
+              {% if user.is_authenticated %}
+                  {% if product.id in wishlist_ids %}
+                    <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn">
+                      <span class="heart-red">❤️</span>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn">
+                      <span class="heart-grey">♡</span>
+                    </a>
+                  {% endif %}
+              {% endif %}
+
               {% if product.thumbnail %}
                 <img src="{{ product.thumbnail.url }}" class="img-fluid mb-2" style="height:140px;object-fit:contain;">
               {% else %}
@@ -60,8 +127,8 @@
                 <div class="price">₹{{ product.price }}</div>
               {% endif %}
 
-              <div class="mt-2">
-                <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-primary me-1">View</a>
+              <div class="mt-2 d-flex justify-content-center gap-1 flex-wrap">
+                <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-primary">View</a>
                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-primary">Add</a>
               </div>
 
@@ -69,9 +136,12 @@
           </div>
           {% endfor %}
         </div>
+
       </section>
       {% endif %}
     {% endfor %}
+
   </div>
 </div>
+
 {% endblock %}
