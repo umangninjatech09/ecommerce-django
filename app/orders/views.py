@@ -12,15 +12,19 @@ from app.users.models import Address
 
 @login_required
 def checkout_page(request):
-    # get cart and visible items
     cart = get_user_cart(request)
     items = cart.items.filter(is_deleted=False).select_related('product')
+
+    # Check stock before showing checkout
+    for item in items:
+        if item.quantity > item.product.stock:
+            messages.error(request, f"Not enough stock for {item.product.name}.")
+            return redirect("cart_page")
+
     total = sum(item.total_price for item in items)
 
-    # get user's saved addresses (not deleted)
     addresses = request.user.addresses.filter(is_deleted=False).order_by('-is_default', '-created_at')
 
-    # default selected address id (first default or first address)
     selected_id = None
     default_addr = addresses.filter(is_default=True).first()
     if default_addr:
@@ -28,7 +32,6 @@ def checkout_page(request):
     elif addresses:
         selected_id = addresses.first().id
 
-    # POST: place order
     if request.method == "POST":
         address_id = request.POST.get("address")
         if not address_id:
@@ -37,7 +40,7 @@ def checkout_page(request):
 
         address = get_object_or_404(Address, id=address_id, user=request.user, is_deleted=False)
 
-        # create order
+        # Create order
         order = Order.objects.create(
             user=request.user,
             address=address,
@@ -45,7 +48,8 @@ def checkout_page(request):
             total_amount=total,
         )
 
-        # create order items
+        # Create order items + reduce stock
+        # Create order items
         for item in items:
             OrderItem.objects.create(
                 order=order,
@@ -55,7 +59,16 @@ def checkout_page(request):
                 subtotal=item.total_price,
             )
 
-        # soft-delete the cart items
+            item.product.stock -= item.quantity
+
+            # Optional: Make product inactive if out of stock
+            if item.product.stock <= 0:
+                item.product.stock = 0
+                item.product.is_active = False
+
+            item.product.save()
+
+        # Empty cart (soft delete)
         cart.items.filter(is_deleted=False).update(is_deleted=True)
 
         messages.success(request, "Order placed successfully!")
@@ -92,8 +105,13 @@ def order_success_page(request, order_no):
 @login_required
 def buy_now_page(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_deleted=False)
-    price = product.discount_price or product.price
 
+    # Prevent Buy Now if out of stock
+    if product.stock <= 0:
+        messages.error(request, "This product is out of stock.")
+        return redirect("product_detail", product.slug)
+
+    price = product.discount_price or product.price
     addresses = request.user.addresses.filter(is_deleted=False)
 
     if request.method == "POST":
@@ -107,6 +125,7 @@ def buy_now_page(request, product_id):
             total_amount=price,
         )
 
+        # Create order item
         OrderItem.objects.create(
             order=order,
             product=product,
@@ -114,6 +133,12 @@ def buy_now_page(request, product_id):
             price=price,
             subtotal=price,
         )
+
+        product.stock -= 1
+        if product.stock <= 0:
+            product.stock = 0
+            product.is_active = False
+        product.save()
 
         messages.success(request, "Order placed successfully!")
         return redirect("order_success_page", order_no=order.order_no)
@@ -123,3 +148,27 @@ def buy_now_page(request, product_id):
         "addresses": addresses,
         "price": price,
     })
+
+
+@login_required
+def cancel_order(request, order_id):
+    # Load the order
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    # Stop if already cancelled or delivered
+    if order.order_status in ["delivered", "cancelled"]:
+        messages.error(request, "This order cannot be cancelled.")
+        return redirect("order_detail_page", order_id=order.id)
+
+    # Restore stock for each item
+    for item in order.items.all():
+        product = item.product
+        product.stock += item.quantity
+        product.save()
+
+    # Update order status
+    order.order_status = "cancelled"
+    order.save()
+
+    messages.success(request, "Order cancelled successfully & stock restored.")
+    return redirect("order_detail_page", order_id=order.id)
