@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">❤️ My Wishlist</h3>
+
+{% if items %}
+<div class="row g-3">
+
+    {% for item in items %}
+    <div class="col-md-3 col-6">
+        <div class="card p-3 text-center">
+
+            <a href="{% url 'product_detail' item.product.slug %}">
+                {% if item.product.thumbnail %}
+                    <img src="{{ item.product.thumbnail.url }}" class="img-fluid" style="height:150px;object-fit:contain;">
+                {% else %}
+                    <img src="https://via.placeholder.com/200" class="img-fluid mb-2">
+                {% endif %}
+            </a>
+
+            <h6 class="mt-2">{{ item.product.name|truncatechars:40 }}</h6>
+
+            <div>
+                {% if item.product.discount_price %}
+                    <span class="price">₹{{ item.product.discount_price }}</span>
+                    <small class="strike">₹{{ item.product.price }}</small>
+                {% else %}
+                    <span class="price">₹{{ item.product.price }}</span>
+                {% endif %}
+            </div>
+
+            <div class="mt-2">
+                <a href="{% url 'toggle_wishlist' item.product.id %}" class="btn btn-sm btn-outline-danger">Remove</a>
+                <a href="{% url 'add_to_cart' item.product.id %}" class="btn btn-sm btn-primary">Add to Cart</a>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+<div class="text-center p-5">
+    <h4>Your wishlist is empty.</h4>
+    <p class="text-muted">Save your favourite products ♥</p>
+</div>
+{% endif %}
+
+{% endblock %}

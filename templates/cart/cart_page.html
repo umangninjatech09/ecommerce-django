@@ -2,56 +2,69 @@
 {% block title %}My Cart{% endblock %}
 
 {% block content %}
-<div class="card p-3">
-  <h4>Your Cart</h4>
+<div class="container mt-3">
+
+  <h2 class="mb-3">Your Cart</h2>
 
   {% if items %}
-    <div class="table-responsive">
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th class="text-end">Price</th>
-            <th class="text-center">Qty</th>
-            <th class="text-end">Subtotal</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
-          <tr>
-            <td>
-              <div class="d-flex align-items-center">
-                {% if item.product.thumbnail %}
-                  <img src="{{ item.product.thumbnail.url }}" style="width:64px;height:64px;object-fit:contain;margin-right:12px;">
-                {% endif %}
-                <div>{{ item.product.name }}</div>
-              </div>
-            </td>
-            <td class="text-end">₹{{ item.price }}</td>
-            <td class="text-center">
-              <form method="post" action="{% url 'update_cart' item.id %}">
-                {% csrf_token %}
-                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control" style="width:90px;margin:auto;">
-              </form>
-            </td>
-            <td class="text-end">₹{{ item.total_price }}</td>
-            <td class="text-end">
-              <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-danger">Remove</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Product</th>
+          <th class="text-center">Price</th>
+          <th class="text-center" width="130">Quantity</th>
+          <th class="text-end">Subtotal</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
 
-    <div class="d-flex justify-content-end align-items-center gap-3 mt-3">
-      <div class="text-end">
-        <div class="small-muted">Total</div>
-        <div class="h5">₹{{ total }}</div>
-      </div>
-      <a class="btn btn-success btn-lg" href="{% url 'checkout_page' %}">Buy Now</a>
-    </div>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              {% if item.product.thumbnail %}
+                <img src="{{ item.product.thumbnail.url }}"
+                     style="width:60px;height:60px;object-fit:cover;border-radius:5px;margin-right:10px;">
+              {% endif %}
+              <div>
+                <div>{{ item.product.name }}</div>
+                <small class="text-muted">{{ item.product.category.name }}</small>
+              </div>
+            </div>
+          </td>
+
+          <td class="text-center">₹{{ item.price }}</td>
+
+          <td class="text-center">
+            <form action="{% url 'update_cart' item.id %}" method="POST" class="d-inline-block">
+              {% csrf_token %}
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                     class="form-control form-control-sm text-center"
+                     style="max-width:80px;" onchange="this.form.submit()">
+            </form>
+          </td>
+
+          <td class="text-end">₹{{ item.total_price }}</td>
+
+          <td class="text-center">
+            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-outline-danger">
+              Remove
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-3 gap-2">
+    <h3 class="mb-0">Total: ₹{{ total }}</h3>
+    <a href="{% url 'checkout_page' %}" class="btn btn-success btn-lg">
+      Place Order
+    </a>
+  </div>
 
   {% else %}
     <p>Your cart is empty.</p>

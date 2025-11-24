@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "app.products",
     "app.carts",
     "app.orders",
+    "app.wishlist",
     
 
 ]
@@ -54,6 +55,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "app.carts.utils.cart_count",
             ],
         },
     },

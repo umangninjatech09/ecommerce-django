@@ -11,43 +11,80 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
 
-      <form class="d-flex ms-auto me-3" method="GET" action="{% url 'product_search' %}">
-        <input class="form-control form-control-sm" type="search" placeholder="Search products…">
+      <!-- Search (full width on mobile, right side on desktop) -->
+      <form class="d-flex ms-auto me-3 my-2 my-lg-0" method="GET" action="{% url 'product_search' %}">
+        <input
+          class="form-control form-control-sm"
+          type="search"
+          name="q"
+          placeholder="Search for products, brands and more"
+          value="{{ request.GET.q|default:'' }}"
+        >
       </form>
 
-      <ul class="navbar-nav">
+      <ul class="navbar-nav align-items-lg-center">
 
+        <!-- ❤️ Wishlist -->
         <li class="nav-item">
-          <a class="nav-link text-white" href="{% url 'cart_page' %}">🛒 Cart</a>
+          <a class="nav-link text-white" href="{% url 'wishlist_page' %}">
+            ❤️ Wishlist
+          </a>
+        </li>
+
+        <!-- 🛒 Cart -->
+        <li class="nav-item position-relative">
+          <a class="nav-link text-white" href="{% url 'cart_page' %}">
+            <!-- Cart Icon SVG -->
+            <svg class="GAbRIN" width="14" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path class="cziJ98" d="M15.32 2.405H4.887C3 2.405 2.46.805 2.46.805L2.257.21C2.208.085 2.083 0 1.946 0H.336C.1 0-.064.24.024.46l.644 1.945L3.11 9.767c.047.137.175.23.32.23h8.418l-.493 1.958H3.768l.002.003c-.017 0-.033-.003-.05-.003-1.06 0-1.92.86-1.92 1.92s.86 1.92 1.92 1.92c.99 0 1.805-.75 1.91-1.712l5.55.076c.12.922.91 1.636 1.867 1.636 1.04 0 1.885-.844 1.885-1.885 0-.866-.584-1.593-1.38-1.814l2.423-8.832c.12-.433-.206-.86-.655-.86" fill="#fff"></path></svg>
+              
+              {% if cart_count > 0 %}
+              <span class="badge bg-danger rounded-pill"
+                    style="font-size: 10px; position: absolute; top: 2px; right: -8px;">
+                  {{ cart_count }}
+              </span>
+              {% endif %}
+          </a>
         </li>
 
         {% if user.is_authenticated %}
 
           <li class="nav-item">
-            <a class="nav-link text-white" href="{% url 'profile_page' %}">{{ user.username }}</a>
+            <a class="nav-link text-white" href="{% url 'profile_page' %}">
+              {{ user.username|default:"Profile" }}
+            </a>
           </li>
 
           {% if user.is_retailer %}
           <li class="nav-item">
-            <a class="nav-link text-warning fw-bold" href="/admin-panel/">Retailer Panel</a>
+            <a class="nav-link text-warning fw-bold" href="/admin-panel/">
+              Retailer Panel
+            </a>
           </li>
           {% endif %}
 
           <li class="nav-item">
-            <a class="nav-link text-white" href="{% url 'logout_page' %}">Logout</a>
+            <a class="nav-link text-white" href="{% url 'logout_page' %}">
+              Logout
+            </a>
           </li>
 
         {% else %}
 
           <li class="nav-item">
-            <a class="nav-link text-white" href="{% url 'login_page' %}">Login</a>
+            <a class="nav-link text-white" href="{% url 'login_page' %}">
+              Login
+            </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link text-white" href="{% url 'register_page' %}">Register</a>
+            <a class="nav-link text-white" href="{% url 'register_page' %}">
+              Register
+            </a>
           </li>
 
         {% endif %}
+
       </ul>
 
     </div>

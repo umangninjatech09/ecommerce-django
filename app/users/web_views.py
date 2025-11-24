@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
+from app.wishlist.models import Wishlist
 
 
 User = apps.get_model("users", "User")
@@ -22,7 +23,7 @@ token_generator = PasswordResetTokenGenerator()
 def home_page(request):
     categories = Category.objects.filter(is_deleted=False)
     category_data = []
-
+                    
     for category in categories:
         products = Product.objects.filter(
             category=category, 
@@ -35,7 +36,16 @@ def home_page(request):
             "products": products
         })
 
-    return render(request, "home.html", {"category_data": category_data})
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        wishlist_ids = list(
+            Wishlist.objects.filter(user=request.user).values_list("product_id", flat=True)
+        )
+
+    return render(request, "home.html", {
+        "category_data": category_data,
+        "wishlist_ids": wishlist_ids,
+    })
 
 # ---------------------------
 # Register
