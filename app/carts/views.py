@@ -28,7 +28,7 @@ def add_to_cart(request, product_id):
         )
 
     messages.success(request, f"{product.name} added to cart.")
-    return redirect("home_page")
+    return redirect(request.META.get("HTTP_REFERER", "home_page"))
 
 
 def cart_page(request):
