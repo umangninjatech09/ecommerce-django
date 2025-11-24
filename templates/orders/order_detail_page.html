@@ -52,5 +52,16 @@
 
     <h3 class="text-end">Total: ₹{{ order.total_amount }}</h3>
 
+    <!-- CANCEL ORDER BUTTON -->
+    {% if order.order_status != "cancelled" and order.order_status != "delivered" %}
+        <div class="text-end mt-3">
+            <a href="{% url 'cancel_order' order.id %}" 
+               class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to cancel this order?');">
+                Cancel Order
+            </a>
+        </div>
+    {% endif %}
+
 </div>
 {% endblock %}
