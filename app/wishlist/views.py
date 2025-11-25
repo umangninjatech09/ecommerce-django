@@ -21,9 +21,9 @@ def toggle_wishlist(request, product_id):
     )
 
     if created:
-        messages.success(request, "Added to wishlist ❤️")
+        messages.success(request, " ✔ Added to your Wishlist")
     else:
         item.delete()
-        messages.info(request, "Removed from wishlist")
+        messages.info(request, "Removed from your Wishlist")
 
     return redirect(request.META.get("HTTP_REFERER", "home_page"))

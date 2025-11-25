@@ -61,20 +61,29 @@ def product_detail_page(request, slug):
 def home_page(request):
     categories = Category.objects.filter(is_deleted=False)
     category_data = []
-                    
+
     for category in categories:
         products = Product.objects.filter(
-            category=category, 
-            is_active=True, 
+            category=category,
+            is_active=True,
             is_deleted=False
-        )[:6]
-
+        )[:10]  # show up to 10 per row
         category_data.append({
             "category": category,
             "products": products
         })
 
-    return render(request, "products/home.html", {"category_data": category_data})
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        wishlist_ids = list(
+            Wishlist.objects.filter(user=request.user)
+            .values_list("product_id", flat=True)
+        )
+
+    return render(request, "products/home.html", {
+        "category_data": category_data,
+        "wishlist_ids": wishlist_ids,
+    })
 
 
 def product_search(request):
