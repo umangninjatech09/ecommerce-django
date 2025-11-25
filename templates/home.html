@@ -1,147 +1,286 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Home - E-Shop{% endblock %}
+{% block title %}Online Shopping Site for Mobiles, Electronics, Furniture, Grocery - E-Shop{% endblock %}
 
 {% block content %}
 
 <style>
+  /* --- GENERAL --- */
+  .home-wrapper {
+      margin-top: 10px;
+  }
+  .section-card {
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+      padding: 12px 12px 8px;
+  }
+
+  /* --- TOP BANNER STRIP (similar to categories bar on Flipkart) --- */
+  .top-category-strip {
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+  }
+  .top-category-item {
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer;
+  }
+  .top-category-item img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 4px;
+  }
+
+  /* --- HERO BANNER --- */
+  .hero-banner {
+      background: linear-gradient(90deg, #13489e, #2874f0);
+      border-radius: 4px;
+      padding: 18px 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+  }
+  .hero-banner h2 {
+      font-size: 22px;
+      margin-bottom: 4px;
+  }
+  .hero-banner p {
+      font-size: 13px;
+      margin-bottom: 0;
+  }
+  .hero-banner img {
+      max-height: 110px;
+      object-fit: contain;
+  }
+
+  /* --- SECTION HEADER --- */
+  .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+  }
+  .section-title {
+      font-size: 18px;
+      font-weight: 600;
+  }
+  .section-subtitle {
+      font-size: 12px;
+      color: #878787;
+  }
+  .view-all-btn {
+      font-size: 12px;
+      color: #2874f0;
+      text-decoration: none;
+      font-weight: 600;
+  }
+
+  /* --- HORIZONTAL PRODUCT ROW (Flipkart style) --- */
+  .product-row {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: thin;
+  }
   .product-card {
-      background: white;
-      padding: 12px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: 0.2s;
+      flex: 0 0 160px;
+      margin-right: 12px;
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      border-radius: 4px;
+      text-align: center;
+      padding: 8px 6px;
       position: relative;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .product-card:last-child {
+      margin-right: 0;
   }
   .product-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .product-card img {
+      height: 140px;
+      width: 100%;
+      object-fit: contain;
+      margin-bottom: 4px;
+  }
+  .product-name {
+      font-size: 13px;
+      margin-bottom: 2px;
+      min-height: 32px;
+  }
+  .price {
+      color: #388e3c;
+      font-weight: 600;
+      font-size: 14px;
+  }
+  .strike {
+      text-decoration: line-through;
+      color: #878787;
+      font-size: 11px;
+  }
+  .cta-row {
+      margin-top: 4px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+  }
+  .cta-row a.btn {
+      padding: 2px 8px;
+      font-size: 11px;
   }
 
-  .price { color:#388e3c; font-weight:700; }
-  .strike { text-decoration:line-through; color:#777; }
-
+  /* ♥ Wishlist in card */
   .wishlist-btn {
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    text-decoration: none;
-    z-index: 10;
-}
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 15px;
+      text-decoration: none;
+  }
 
-.heart-red {
+  .heart-red {
     font-size: 12px;     /* red heart size */
     color: #e53935;
 }
 
-.heart-grey {
+  .heart-grey {
     font-size: 18px;     /* different size for grey */
     color: #c7c7c7;
 }
 
-@media (max-width: 767px) {
-    .hero-wrap {
-      padding: 18px !important;
-      text-align: center;
-    }
-    .hero-wrap img {
-      display: none;
-    }
-    .category-side {
-      display: none;
-    }
+  /* --- RESPONSIVE --- */
+  @media (max-width: 768px) {
+      .fk-search {
+          width: 100%;
+          margin-top: 8px;
+      }
+      .hero-banner {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+      }
+      .hero-banner img {
+          align-self: center;
+      }
+      .top-category-strip {
+          justify-content: flex-start;
+      }
+      .product-card {
+          flex: 0 0 48%;
+      }
   }
 
+  @media (max-width: 576px) {
+      .product-card {
+          flex: 0 0 70%;
+      }
+  }
 </style>
 
-<div class="row">
+<div class="home-wrapper">
 
-  <div class="col-lg-3 category-side d-none d-lg-block">
-    <div class="card p-3 mb-4">
-      <h6 class="mb-3">Categories</h6>
-      {% for item in category_data %}
-        <a class="d-block py-2 small text-decoration-none" href="{% url 'product_list' item.category.slug %}">
-          {{ item.category.name }}
-        </a>
-      {% endfor %}
-    </div>
-  </div>
-
-  <div class="col-lg-9">
-
-    <!-- Hero Section -->
-    <div class="mb-4 rounded" style="background:linear-gradient(90deg, #2874f0, #1a61d6); color:#fff; padding:28px;">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h2 class="mb-1">Welcome to E-Shop</h2>
-          <div class="small">Best deals and offers — Flipkart style layout</div>
-        </div>
-        <img src="{% static 'images/hero-placeholder.png' %}" alt="hero" style="max-height:80px;">
-      </div>
-    </div>
-
-    <!-- Category product sections -->
+  <!-- Top category icons strip (you can replace images with your own) -->
+  <div class="top-category-strip">
     {% for item in category_data %}
-      {% if item.products %}
-      <section class="mb-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h5 class="mb-0">{{ item.category.name }}</h5>
-          <a href="{% url 'product_list' item.category.slug %}" class="small-muted small">View all</a>
-        </div>
-
-        <div class="row g-3">
-          {% for product in item.products %}
-          <div class="col-md-3 col-sm-6">
-            <div class="product-card text-center">
-
-              <!-- ❤️ Wishlist Toggle -->
-              {% if user.is_authenticated %}
-                  {% if product.id in wishlist_ids %}
-                    <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn">
-                      <span class="heart-red">❤️</span>
-                    </a>
-                  {% else %}
-                    <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn">
-                      <span class="heart-grey">♡</span>
-                    </a>
-                  {% endif %}
-              {% endif %}
-
-              {% if product.thumbnail %}
-                <img src="{{ product.thumbnail.url }}" class="img-fluid mb-2" style="height:140px;object-fit:contain;">
-              {% else %}
-                <img src="https://via.placeholder.com/200x150" class="img-fluid mb-2">
-              {% endif %}
-
-              <h6 class="mb-1" style="font-size:0.95rem;">
-                {{ product.name|truncatechars:40 }}
-              </h6>
-
-              {% if product.discount_price %}
-                <div>
-                  <span class="price">₹{{ product.discount_price }}</span>
-                  <small class="strike ms-2">₹{{ product.price }}</small>
-                </div>
-              {% else %}
-                <div class="price">₹{{ product.price }}</div>
-              {% endif %}
-
-              <div class="mt-2 d-flex justify-content-center gap-1 flex-wrap">
-                <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-primary">View</a>
-                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-primary">Add</a>
-              </div>
-
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-
-      </section>
-      {% endif %}
+      <div class="top-category-item">
+        <!-- For now using placeholder icon; you can map real icons per category -->
+        <a href="{% url 'product_list' item.category.slug %}" class="text-decoration-none text-dark">
+          <img src="https://via.placeholder.com/48x48?text={{ forloop.counter }}" alt="{{ item.category.name }}">
+          <div>{{ item.category.name }}</div>
+        </a>
+      </div>
     {% endfor %}
-
   </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div>
+      <h2>Best Deals on Top Brands</h2>
+      <p>Mobiles, Electronics, Fashion & more – shop the Flipkart-style way on E-Shop.</p>
+    </div>
+    <img src="{% static 'images/hero-placeholder.png' %}" alt="E-Shop Deals">
+  </div>
+
+  <!-- Category-based rows -->
+  {% for item in category_data %}
+    {% if item.products %}
+    <div class="section-card">
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">{{ item.category.name }}</div>
+          <div class="section-subtitle">Best of {{ item.category.name }} | Curated picks for you</div>
+        </div>
+        <a href="{% url 'product_list' item.category.slug %}" class="view-all-btn">VIEW ALL</a>
+      </div>
+
+      <div class="product-row">
+        {% for product in item.products %}
+        <div class="product-card">
+
+          <!-- Wishlist heart: red if in wishlist_ids -->
+          {% if user.is_authenticated %}
+            {% if product.id in wishlist_ids %}
+              <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn" title="Remove from wishlist">
+                <span class="heart-red">❤️</span>
+              </a>
+            {% else %}
+              <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn" title="Add to wishlist">
+                <span class="heart-grey">♡</span>
+              </a>
+            {% endif %}
+          {% endif %}
+
+          <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark">
+            {% if product.thumbnail %}
+              <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="https://via.placeholder.com/200x200" alt="No image">
+            {% endif %}
+
+            <div class="product-name">
+              {{ product.name|truncatechars:40 }}
+            </div>
+          </a>
+
+          {% if product.discount_price %}
+            <div>
+              <span class="price">₹{{ product.discount_price }}</span>
+              <span class="strike ms-1">₹{{ product.price }}</span>
+            </div>
+          {% else %}
+            <div class="price">₹{{ product.price }}</div>
+          {% endif %}
+
+          <div class="cta-row">
+            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-primary">ADD TO CART</a>
+            <a href="{% url 'buy_now' product.id %}" class="btn btn-sm btn-outline-success">BUY NOW</a>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+    {% endif %}
+  {% endfor %}
+
 </div>
 
 {% endblock %}
