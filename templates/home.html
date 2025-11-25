@@ -18,29 +18,34 @@
   }
 
   /* --- TOP BANNER STRIP (similar to categories bar on Flipkart) --- */
-  .top-category-strip {
-      background: #fff;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 16px;
-      padding: 10px 18px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 12px;
-  }
-  .top-category-item {
-      text-align: center;
-      font-size: 13px;
-      cursor: pointer;
-  }
-  .top-category-item img {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 4px;
-  }
+/* Flipkart Category Strip */
+/* Outer white strip */
+.top-category-strip {
+    background: #fff;
+    border-radius: 4px;
+    padding: 16px 50px;    /* LEFT/RIGHT GAP LIKE FLIPKART */
+    display: flex;
+    gap: 42px;             /* SPACE BETWEEN ITEMS */
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.top-category-item {
+    text-align: center;
+    cursor: pointer;
+    min-width: 75px;   /* Ensures spacing stays equal */
+}
+
+.top-category-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+
 
   /* --- HERO BANNER --- */
   .hero-banner {
@@ -197,16 +202,18 @@
 
   <!-- Top category icons strip (you can replace images with your own) -->
   <div class="top-category-strip">
+
     {% for item in category_data %}
       <div class="top-category-item">
-        <!-- For now using placeholder icon; you can map real icons per category -->
         <a href="{% url 'product_list' item.category.slug %}" class="text-decoration-none text-dark">
-          <img src="https://via.placeholder.com/48x48?text={{ forloop.counter }}" alt="{{ item.category.name }}">
+          <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}">
           <div>{{ item.category.name }}</div>
         </a>
       </div>
     {% endfor %}
+  
   </div>
+  
 
   <!-- Hero Banner -->
   <div class="hero-banner">
