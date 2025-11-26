@@ -25,9 +25,10 @@
     border-radius: 4px;
     padding: 16px 50px;    /* LEFT/RIGHT GAP LIKE FLIPKART */
     display: flex;
-    gap: 42px;             /* SPACE BETWEEN ITEMS */
-    justify-content: flex-start;
+    gap: 49px;             /* SPACE BETWEEN ITEMS */
+    justify-content: center;
     align-items: center;
+    flex-wrap: nowrap;
     overflow-x: auto;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
@@ -94,80 +95,74 @@
   }
 
   /* --- HORIZONTAL PRODUCT ROW (Flipkart style) --- */
-  .product-row {
-      display: flex;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: thin;
-  }
-  .product-card {
-      flex: 0 0 160px;
-      margin-right: 12px;
-      background: #fff;
-      border: 1px solid #f0f0f0;
-      border-radius: 4px;
-      text-align: center;
-      padding: 8px 6px;
-      position: relative;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
-  }
-  .product-card:last-child {
-      margin-right: 0;
-  }
-  .product-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
-  }
-  .product-card img {
-      height: 140px;
-      width: 100%;
-      object-fit: contain;
-      margin-bottom: 4px;
-  }
-  .product-name {
-      font-size: 13px;
-      margin-bottom: 2px;
-      min-height: 32px;
-  }
-  .price {
-      color: #388e3c;
-      font-weight: 600;
-      font-size: 14px;
-  }
-  .strike {
-      text-decoration: line-through;
-      color: #878787;
-      font-size: 11px;
-  }
-  .cta-row {
-      margin-top: 4px;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-  }
-  .cta-row a.btn {
-      padding: 2px 8px;
-      font-size: 11px;
-  }
+/* ---- PRODUCT CAROUSEL (Flipkart style) ---- */
 
-  /* ♥ Wishlist in card */
-  .wishlist-btn {
-      position: absolute;
-      top: 6px;
-      right: 8px;
-      font-size: 15px;
-      text-decoration: none;
-  }
+/* FIXED CARD SIZE (Flipkart style) */
+.product-card {
+    flex: 0 0 200px;          /* Fixed width */
+    height: 320px;            /* Fixed height */
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 10px 8px;
+    position: relative;
+    text-align: center;
+    transition: .2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
 
-  .heart-red {
-    font-size: 12px;     /* red heart size */
+/* IMAGE BOX (fixed height inside) */
+.product-card img {
+    height: 150px;            /* uniform image height */
+    width: 100%;
+    object-fit: contain;      /* guarantee equal look */
+    margin-bottom: 8px;
+}
+
+/* PRODUCT NAME FIXED HEIGHT */
+.product-name {
+    font-size: 13px;
+    min-height: 40px;         /* keeps alignment same */
+    overflow: hidden;
+}
+
+/* PRICE BLOCK FIXED HEIGHT */
+.price-block {
+    min-height: 25px;
+}
+
+/* PRICE STYLE */
+.price {
+    font-weight: 600;
+    color: #388e3c;
+    font-size: 16px;
+}
+.strike {
+    color: #878787;
+    font-size: 12px;
+    text-decoration: line-through;
+}
+
+/* WISHLIST ICON */
+.wishlist-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 15px;
+}
+
+
+.heart-red {
+    font-size: 15px;
     color: #e53935;
 }
-
-  .heart-grey {
-    font-size: 18px;     /* different size for grey */
+.heart-grey {
+    font-size: 15px;
     color: #c7c7c7;
 }
+
 
   /* --- RESPONSIVE --- */
   @media (max-width: 768px) {
@@ -241,46 +236,41 @@
         {% for product in item.products %}
         <div class="product-card">
 
-          <!-- Wishlist heart: red if in wishlist_ids -->
           {% if user.is_authenticated %}
-            {% if product.id in wishlist_ids %}
-              <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn" title="Remove from wishlist">
-                <span class="heart-red">❤️</span>
+              {% if product.id in wishlist_ids %}
+              <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn">
+                  <span class="heart-red">❤️</span>
               </a>
-            {% else %}
-              <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn" title="Add to wishlist">
-                <span class="heart-grey">♡</span>
+              {% else %}
+              <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn">
+                  <span class="heart-grey">♡</span>
               </a>
-            {% endif %}
+              {% endif %}
           {% endif %}
-
+      
           <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark">
-            {% if product.thumbnail %}
+      
+              {% if product.thumbnail %}
               <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
-            {% else %}
-              <img src="https://via.placeholder.com/200x200" alt="No image">
-            {% endif %}
-
-            <div class="product-name">
-              {{ product.name|truncatechars:40 }}
-            </div>
+              {% else %}
+              <img src="https://via.placeholder.com/200" alt="No image">
+              {% endif %}
+      
+              <div class="product-name">{{ product.name|truncatechars:45 }}</div>
+      
+              {% if product.discount_price %}
+                  <div>
+                      <span class="price">₹{{ product.discount_price }}</span>
+                      <span class="strike">₹{{ product.price }}</span>
+                  </div>
+              {% else %}
+                  <div class="price">₹{{ product.price }}</div>
+              {% endif %}
           </a>
-
-          {% if product.discount_price %}
-            <div>
-              <span class="price">₹{{ product.discount_price }}</span>
-              <span class="strike ms-1">₹{{ product.price }}</span>
-            </div>
-          {% else %}
-            <div class="price">₹{{ product.price }}</div>
-          {% endif %}
-
-          <div class="cta-row">
-            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-primary">ADD TO CART</a>
-            <a href="{% url 'buy_now' product.id %}" class="btn btn-sm btn-outline-success">BUY NOW</a>
-          </div>
-
+      
         </div>
+      
+        
         {% endfor %}
       </div>
 
