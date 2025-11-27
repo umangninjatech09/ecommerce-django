@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Profile Settings{% endblock %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* (UI styles same as before – omitted for space)
+   Ask me to expand if you need the full CSS block again.
+*/
+</style>
+
+<div class="settings-wrapper">
+
+    <!-- LEFT TABS -->
+    <div class="settings-sidebar">
+        <h5>My Account</h5>
+        <a class="settings-tab active" data-tab="profile-tab">Profile Information</a>
+        <a class="settings-tab" data-tab="address-tab">Addresses</a>
+        <a class="settings-tab" data-tab="security-tab">Security</a>
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="settings-card">
+
+        <div class="settings-header">
+            <div class="settings-header-left">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="profile-avatar-lg" style="object-fit: cover;">
+                {% else %}
+                    <div class="profile-avatar-lg">
+                        {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+
+                <div>
+                    <div class="profile-info-title">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="profile-info-subtitle">Update your personal details</div>
+                </div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="dark-toggle">
+                <span>Dark Mode</span>
+                <input type="checkbox" id="darkModeToggle">
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- PROFILE TAB -->
+        <div id="profile-tab" class="tab-pane active">
+
+            <form id="profileForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <label>First Name</label>
+                {{ form.first_name }}
+
+                <label>Last Name</label>
+                {{ form.last_name }}
+
+                <label>Email</label>
+                {{ form.email }}
+
+                <label>Phone Number</label>
+                {{ form.phone_number }}
+
+                <label>Gender</label>
+                {{ form.gender }}
+
+                <label>Profile Picture</label>
+                {{ form.profile_image }}
+
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="profile-img-preview">
+                {% endif %}
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn save-btn">Save</button>
+                    <a href="/user/profile/" class="btn btn-light cancel-btn border">Cancel</a>
+                </div>
+            </form>
+
+            <div id="profileSaveMsg" class="mt-2"></div>
+
+        </div>
+
+        <!-- ADDRESS TAB -->
+        <div id="address-tab" class="tab-pane" style="display:none;">
+            <p>Manage your saved addresses.</p>
+            <a class="btn btn-primary btn-sm" href="{% url 'address_list_page' %}">Go to Address Book</a>
+        </div>
+
+        <!-- SECURITY TAB -->
+        <div id="security-tab" class="tab-pane" style="display:none;">
+            <p>Change your login password:</p>
+            <a class="btn btn-outline-primary btn-sm" href="{% url 'password_change' %}">Change Password</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* Tab Switcher */
+document.querySelectorAll(".settings-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+        document.querySelectorAll(".settings-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-pane").forEach(p => p.style.display = "none");
+
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).style.display = "block";
+    });
+});
+
+/* AJAX Save */
+document.getElementById("profileForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("", {
+        method: "POST",
+        headers: {"X-Requested-With": "XMLHttpRequest"},
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        const msg = document.getElementById("profileSaveMsg");
+
+        if (data.success) {
+            msg.style.color = "green";
+            msg.innerText = data.message;
+        } else {
+            msg.style.color = "red";
+            msg.innerText = "Fix the errors!";
+        }
+    });
+});
+
+/* Dark Mode Toggle */
+const toggle = document.getElementById("darkModeToggle");
+const body = document.body;
+
+if (localStorage.getItem("darkMode") === "on") {
+    body.classList.add("dark-mode");
+    toggle.checked = true;
+}
+
+toggle.addEventListener("change", () => {
+    if (toggle.checked) {
+        body.classList.add("dark-mode");
+        localStorage.setItem("darkMode", "on");
+    } else {
+        body.classList.remove("dark-mode");
+        localStorage.setItem("darkMode", "off");
+    }
+});
+</script>
+
+{% endblock %}

@@ -6,15 +6,26 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser, BaseModel):
     username = models.CharField(max_length=150, blank=True, null=True, unique=True)
     email = models.EmailField()
-    first_name = models.CharField(max_length=30) 
+    first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+
+    GENDER_CHOICES = (
+        ("M", "Male"),
+        ("F", "Female"),
+        ("O", "Other"),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+
+    profile_image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
+
     is_customer = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_retailer = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    
     
     def __str__(self):
         return self.email

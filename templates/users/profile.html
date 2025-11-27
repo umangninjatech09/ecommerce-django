@@ -3,45 +3,78 @@
 
 {% block content %}
 <div class="row">
+  
+  <!-- LEFT PROFILE CARD -->
   <div class="col-md-4">
     <div class="card p-3 text-center">
-      <div style="font-size:48px; color:var(--flipkart-blue); font-weight:700;">{{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}</div>
+      
+      <!-- Profile Initial -->
+      <div style="font-size:48px; color:var(--flipkart-blue); font-weight:700;">
+        {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}
+      </div>
+
+      <!-- Name & Email -->
       <h5 class="mt-2">{{ user.get_full_name|default:user.username }}</h5>
       <p class="small-muted">{{ user.email }}</p>
 
+      <!-- Buttons -->
       <div class="d-grid gap-2 mt-3">
-        <a class="btn btn-primary" href="{% url 'address_list_page' %}">Manage Addresses</a>
-        <a class="btn btn-outline-danger" href="{% url 'logout_page' %}">Logout</a>
+        
+        <!-- EDIT PROFILE BUTTON (NEW) -->
+        <a class="btn btn-warning text-dark" href="{% url 'edit_profile' %}">
+          ✏️ Edit Profile
+        </a>
+
+        <!-- Manage Address -->
+        <a class="btn btn-primary" href="{% url 'address_list_page' %}">
+          Manage Addresses
+        </a>
+
+        <!-- Retailer Panel -->
         {% if user.is_retailer %}
-          <a class="btn btn-warning text-dark" href="/admin-panel/">Retailer Panel</a>
+        <a class="btn btn-warning text-dark" href="/admin-panel/">
+          Retailer Panel
+        </a>
         {% endif %}
+
+        <!-- Logout -->
+        <a class="btn btn-outline-danger" href="{% url 'logout_page' %}">Logout</a>
+
       </div>
     </div>
   </div>
 
+
+  <!-- RIGHT SIDE: ORDERS -->
   <div class="col-md-8">
     <div class="card p-3">
       <h5>My Orders</h5>
+
       {% if orders %}
-        <ul class="list-group">
-          {% for order in orders %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <strong>{{ order.order_no }}</strong><br>
-                <small class="small-muted">{{ order.created_at|date:"d M Y" }}</small>
-              </div>
-              <div class="text-end">
-                <div>{{ order.order_status|title }}</div>
-                <div class="small-muted">₹{{ order.total_amount }}</div>
-                <a class="btn btn-sm btn-primary mt-1" href="{% url 'order_detail_page' order.id %}">View</a>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
+      <ul class="list-group">
+        {% for order in orders %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          
+          <div>
+            <strong>{{ order.order_no }}</strong><br>
+            <small class="small-muted">{{ order.created_at|date:"d M Y" }}</small>
+          </div>
+
+          <div class="text-end">
+            <div>{{ order.order_status|title }}</div>
+            <div class="small-muted">₹{{ order.total_amount }}</div>
+            <a class="btn btn-sm btn-primary mt-1" href="{% url 'order_detail_page' order.id %}">View</a>
+          </div>
+
+        </li>
+        {% endfor %}
+      </ul>
       {% else %}
-        <p class="small-muted">No orders yet.</p>
+      <p class="small-muted">No orders yet.</p>
       {% endif %}
+      
     </div>
   </div>
+
 </div>
 {% endblock %}
