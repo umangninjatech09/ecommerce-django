@@ -13,4 +13,7 @@ urlpatterns = [
     path("addresses/<int:pk>/delete/", web_views.address_delete_page, name="address_delete_page"),
     path("forgot-password/", web_views.forgot_password_page, name="forgot_password_page"),
     path("reset-password/<uidb64>/<token>/", web_views.reset_password_page, name="reset_password_page"),
+    path("profile/settings/", web_views.edit_profile, name="edit_profile"),
+    path("password/change/", web_views.password_change_page, name="password_change"),
+    path("password/change/done/", web_views.password_change_done_page, name="password_change_done"),
 ]

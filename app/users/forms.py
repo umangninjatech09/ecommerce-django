@@ -57,3 +57,19 @@ class AddressForm(forms.ModelForm):
             "postal_code",
             "is_default",
         ]
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            "first_name", "last_name", "email",
+            "phone_number", "gender", "profile_image"
+        ]
+        widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control"}),
+            "gender": forms.Select(attrs={"class": "form-control"}),
+            "profile_image": forms.FileInput(attrs={"class": "form-control"}),
+        }

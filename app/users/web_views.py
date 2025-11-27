@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import RegisterForm, LoginForm, AddressForm, RetailerRegisterForm
+from .forms import RegisterForm, LoginForm, AddressForm, RetailerRegisterForm, EditProfileForm
 from .models import Address
 from app.products.models import Product, Category
 from django.db.models import Sum
@@ -13,6 +13,9 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from app.wishlist.models import Wishlist
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.http import JsonResponse
 
 
 User = apps.get_model("users", "User")
@@ -272,3 +275,53 @@ def address_delete_page(request, pk):
     address.save(update_fields=["is_deleted"])
     messages.success(request, "Address deleted successfully.")
     return redirect("address_list_page")
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, request.FILES, instance=user)
+
+        if form.is_valid():
+            form.save()
+
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True, "message": "Profile updated!"})
+
+            messages.success(request, "Profile updated successfully!")
+            return redirect("edit_profile")
+
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": False, "errors": form.errors})
+
+    else:
+        form = EditProfileForm(instance=user)
+
+    return render(request, "users/edit_profile.html", {"form": form})
+
+
+@login_required
+def password_change_page(request):
+    user = request.user
+
+    if request.method == "POST":
+        form = PasswordChangeForm(user, request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Password updated successfully!")
+            return redirect("password_change_done")
+
+    else:
+        form = PasswordChangeForm(user)
+
+    return render(request, "users/password_change.html", {"form": form})
+
+
+@login_required
+def password_change_done_page(request):
+    return render(request, "users/password_change_done.html")
